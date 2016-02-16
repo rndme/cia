@@ -83,9 +83,9 @@ function CIA(reductions, state, pool) {
 			var heap = reductions[action] || [];		  
 			if(!heap.length && action!="_INIT_" ) throw new ReferenceError("Unknown reducer group: "+action);
 		  	that.history.push([action, data]);
-		  	heap.forEach(function(fn){
-			  	state = fn.call(this, state, data) || state;
-			}, that);
+		  	forEach(heap, function(fn){
+			  	if(that.returnValue) state = fn.call(that, state, data) || state;
+			});
 		  	if(!that.returnValue){
 			 	that.returnValue=true; 
 			  	return that;
