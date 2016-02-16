@@ -1,4 +1,19 @@
 //cia.js  by dandavis [CCBY4]
+(function (root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define([], factory);
+	} else if (typeof exports === 'object') {
+		// Node. Does not work with strict CommonJS, but
+		// only CommonJS-like environments that support module.exports,
+		// like Node.
+		module.exports = factory({});
+	} else {
+		// Browser globals (root is window)
+		root.CIA = factory(root);
+  }
+}(this, function (pub) {
+
 
 function CIA(reductions, state, pool) {
 	if(typeof reductions  != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
@@ -92,4 +107,6 @@ function CIA(reductions, state, pool) {
 	return ret;
 }; // end CIA()
   
-  
+return CIA;
+
+}));
