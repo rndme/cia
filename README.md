@@ -1,7 +1,7 @@
 # CIA
 ## Centralized Inner Authority
 
-### A flux/dedux-like central dispatcher providing a single source of truth.
+### A flux/redux-like central dispatcher providing a single source of truth.
 
 ## Improvements to redux:
 * subscribes actions to typed events - raise “INCREMENT” to fire increment action(s)
