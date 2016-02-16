@@ -1,0 +1,38 @@
+{
+  "name": "cia",
+  "main": "cia.js",
+  "version": "1.4.2",
+  "description": "centralized inner authority",
+  "keywords": [
+    "events",
+    "flux",
+    "dispatch",
+    "state"
+  ],
+  "homepage": "https://github.com/rndme/cia/",
+  "license": "CC-BY-4.0",
+  "author": {
+    "name": "dandavis",
+    "email": "rndme@users.noreply.github.com",
+    "url": "http://danml.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rndme/cia.git"
+  },
+  "bugs": {
+    "email": "rndme@users.noreply.github.com"
+  },
+  "files": [
+    "cia.js"
+  ],
+  "npmName": "cia",
+  "npmFileMap": [
+    {
+      "basePath": "/",
+      "files": [
+        "*.js"
+      ]
+    }
+  ]
+}
