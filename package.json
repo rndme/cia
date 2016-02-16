@@ -1,7 +1,7 @@
 {
   "name": "cia",
   "main": "cia.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "centralized inner authority",
   "keywords": [
     "events",
