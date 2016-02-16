@@ -17,3 +17,38 @@
 * Can dupe/alias/modify links at run-time and during execution - `on/off/subscribe/unsubscribe`
 * Mark "all actions" for certain events, or a conditional boolean function `.subscribe(fn, FLAG/FN)`
 
+
+## Example
+```html
+<html>
+  <main id=main></main>
+  <script src="http://danml.com/js/cia.js"></script>
+<script>
+
+var store = CIA({ // action reducers (state-adjusting pure functions)
+	ADD: function(state){
+	  return {count: state.count+1};
+	},
+	SET : function(state, e){
+		return {count: e};
+	},
+	_INIT_: console.log.bind(console, "booting") // optional internal event
+},{  // default application state:
+	count: 0
+});
+
+// subscribe() to render on each change event:
+store.subscribe(function render(state, blnForce) {
+	main.innerHTML="<pre>"+JSON.stringify([state, store.history], null, "\t");
+});	  
+
+// make some state changes:
+store.dispatch("ADD");  // state.count == 1
+store.dispatch("ADD");  // state.count == 2
+store.dispatch("SET", 12 );// state.count == 12
+store.dispatch("ADD");  // state.count == 13
+store.undo(2);  // state.count == 2
+
+</script>
+</html>
+```
