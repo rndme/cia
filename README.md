@@ -14,4 +14,4 @@
 * Halt further execution from within the event handlers by setting `this.returnValue=false;`
 * Can dupe/alias/modify links at run-time and during execution - `on/off/subscribe/unsubscribe`
 * Mark "all actions" for certain events, or a conditional boolean function `.subscribe(fn, FLAG/FN)`
-* Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("new,log,bu", uName)`
+* Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
