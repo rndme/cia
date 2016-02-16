@@ -47,8 +47,34 @@ store.dispatch("ADD");  // state.count == 1
 store.dispatch("ADD");  // state.count == 2
 store.dispatch("SET", 12 );// state.count == 12
 store.dispatch("ADD");  // state.count == 13
-store.undo(2);  // state.count == 2
+store.undo(1);  // state.count == 12
 
 </script>
 </html>
+```
+which  shows:
+```js
+[
+	{
+		"count": 12
+	},
+	[
+		[
+			"_INIT_",
+			null
+		],
+		[
+			"ADD",
+			null
+		],
+		[
+			"ADD",
+			null
+		],
+		[
+			"SET",
+			12
+		]
+	]
+]
 ```
