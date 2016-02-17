@@ -38,6 +38,9 @@
 * `before()` and `after()` also take function conditionals instead of a string wait on type name
 * `dispatch()`ing a RegExp as a type triggers any reducer type that matches
 * wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
+* non-string types: pass `reducers.KEY` instead of `"KEY"` as a type for validity and IDE happiness
+* non-string types: pass `instance.$KEY` instead of `"KEY"` as a type for validity and IDE happiness
+* `.bind(context)` to reducers for BYO-context; internals don't use `this` to `.dispatch()`
 
 
 
