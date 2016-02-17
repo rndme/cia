@@ -217,7 +217,7 @@ function CIA(reductions, state, pool) {
 
 					forEach(heap, function(fn) {
 						try {
-							state = fn.call(that, state, data) || state;
+							state = fn(state, data) || state;
 						} catch(err) {
 							ret.dispatch("_ERROR_", [err, strType, data]);
 						}
@@ -225,7 +225,7 @@ function CIA(reductions, state, pool) {
 
 					forEach(pool, function(fn) {
 						if(fn._matcher) {
-							if(fn._matcher.call && !fn._matcher.call(that, strType)) return;
+							if(fn._matcher.call && !fn._matcher(strType)) return;
 							if(strType.search(fn._matcher) === -1) return;
 						}
 						fn(state);
