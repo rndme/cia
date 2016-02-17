@@ -3,6 +3,14 @@
 
 ### A flux/redux-like central dispatcher providing a single source of truth.
 
+## Setup:
+`npm install cia` or `bower install cia`
+
+## Usage:
+`cia({methods}, {state} || {}, [handlers] || [] )`  <br />
+`cia({methods}, {state} || {}, fnPoolReturningFunction )`
+
+
 ## Alterations from redux:
 * Accepts opbject of methods instead of hard-coded `switch(action.type)` statements
 * Returning state in a reducer is optional; defaults to existing state
