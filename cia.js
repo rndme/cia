@@ -200,6 +200,8 @@ function CIA(reductions, state, pool) {
 						return ret.dispatch("_MISSING_", [strType, data]);
 					}
 
+					if( "*" in reductions) heap=heap.concat( reductions['*'] );
+					
 					if(!isInternal) that.history.push([strType, data]);
 
 					forEach(heap, function(fn) {
