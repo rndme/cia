@@ -37,6 +37,7 @@
 * Reduce an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
 * `before()` and `after()` also take function conditionals instead of a string wait on type name
 * `dispatch()`ing a RegExp as a type triggers any reducer type that matches
+* wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
 
 
 
