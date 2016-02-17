@@ -9,7 +9,6 @@
   }
 }(this, function (pub) {
 
-
 function CIA(reductions, state, pool) {
 
   if(typeof reductions  != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
@@ -17,14 +16,20 @@ function CIA(reductions, state, pool) {
   function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
   function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
   function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
+  function dupe(o){return CIA.freeze(assign({}, o));}
   
 	state = state || {};
 	pool = pool || [];
-	Object.keys(reductions).forEach(function(k){var o=reductions[k]; if(!Array.isArray(o))reductions[k]=[o];});
-  	var orig=Object.freeze(assign({}, state)),
-	flags={},
-	rxInternal = /^_[A-Z]+_$/,
-	ret={
+	
+	forEach(Object.keys(reductions), function(k){
+		var o=reductions[k]; 
+		if(!Array.isArray(o)) reductions[k]=[o];
+	});
+	
+  	var orig=dupe(state),
+	 flags={},
+	 rxInternal = /^_[A-Z]+_$/,
+	 ret={
 	  	returnValue: true,
 		history: [],
 	  	undo: function(n){
@@ -35,9 +40,8 @@ function CIA(reductions, state, pool) {
 		},
 	  
 		getState: function(){ 
-			return assign({}, state);
+			return dupe(state);
 		},
-	  
 	  
 		flag: function(strType, value){ // fires knowns and news when subscribed, good for ready()
 			forEach(arr(strType), function(strType){
@@ -84,7 +88,7 @@ function CIA(reductions, state, pool) {
 			if(!r) return false;
 			ret.dispatch("_OFF_", [strType, fnReducer]);
 			if(fnReducer==="*"){
-			  return delete reductions[strType];
+				return delete reductions[strType];
 			}
 		  
 			var index=r.indexOf(fnReducer);
@@ -225,6 +229,10 @@ function CIA(reductions, state, pool) {
 	ret.dispatch.call(ret, "_INIT_", []);
 	return ret;
 }; // end CIA()
+
+// config, available externally
+CIA.freeze=Object.freeze; // used to freeze state, change to just "Object" (or K) to allow mutable state properties.
+
   
 return CIA;
 
