@@ -19,7 +19,7 @@ function CIA(reductions, state, pool) {
   function dupe(o){return CIA.freeze(assign({}, o));}
   
 	state = state || {};
-	pool = pool || [];
+	pool = Array.isArray(pool) ? pool : (typeof pool==="function" ? pool() : []);
 	
 	forEach(Object.keys(reductions), function(k){
 		var o=reductions[k]; 
