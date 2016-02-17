@@ -26,7 +26,7 @@
 ## Additional Features:
 * Built-in event stream `.history` and thus, a simple `.undo()` implementation (naive)
 * Clear the `.history` with `.reset()`
-* Halt further execution from within the event handlers by setting `this.returnValue=false;`
+* Context-free reducer invocation means you can bind `this` in your reducers without drawbacks.
 * Can dupe/alias/modify links at run-time and during execution - `on/off/subscribe/unsubscribe`
 * Mark "all actions" for certain events, or a conditional boolean function `.subscribe(fn, FLAG/FN)`
 * Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
