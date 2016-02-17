@@ -119,17 +119,33 @@ function CIA(reductions, state, pool) {
 			return this;		
 		},
 
-		after: function(strType, triggerType, fnReducer){
-			var ok=ret.history.some(function(x){return x[0]===triggerType;});
+		after: function(strType, trigger, fnReducer){
+			if(typeof trigger==="function") return ret.on(strType, function wait(state, data){
+				if(trigger(state, data)){
+					ret.off(strType, wait);
+					ret.on(strType, fnReducer);
+					fnReducer.call(ret, state, data);
+				}
+			});
+			var ok=ret.history.some(function(x){return x[0]===trigger;});
 			if(ok) return ret.on(strType, fnReducer);
-			return ret.once(triggerType, fnReducer);
+			return ret.once(trigger, fnReducer);
 		},
 
-		before: function(strType, triggerType, fnReducer){
-			var used=ret.history.some(function(x){return x[0]===triggerType;});
+		before: function(strType, trigger, fnReducer){
+
+			if(typeof trigger==="function") return ret.on(strType, function wait(state, data){
+				if(trigger(state, data)){
+					ret.off(strType, wait);
+				}else{
+					fnReducer.call(ret, state, data);
+				}
+			});
+
+			var used=ret.history.some(function(x){return x[0]===trigger;});
 			if(used) return ret;
 			ret.on(strType, fnReducer);
-			return ret.once(triggerType, function oncer(){
+			return ret.once(trigger, function oncer(){
 				ret.off(strType, fnReducer);
 			});
 		},
