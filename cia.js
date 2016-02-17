@@ -202,19 +202,15 @@ function CIA(reductions, state, pool) {
 
 					if( "*" in reductions) heap=heap.concat( reductions['*'] );
 					
-					if(!isInternal) that.history.push([strType, data]);
+					if(!isInternal) ret.history.push([strType, data]);
 
 					forEach(heap, function(fn) {
 						try {
-							if(that.returnValue) state = fn.call(that, state, data) || state;
+							state = fn.call(that, state, data) || state;
 						} catch(err) {
 							ret.dispatch("_ERROR_", [err, strType, data]);
 						}
 					});
-					if(!that.returnValue) {
-						that.returnValue = true;
-						return that;
-					}
 
 					forEach(pool, function(fn) {
 						if(fn._matcher) {
