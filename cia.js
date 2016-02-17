@@ -11,16 +11,15 @@
 
 function CIA(reductions, state, pool) {
 
-  if(typeof reductions  != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
+  state = typeof state === "function" ? state() : (state || {});
+  reductions = typeof reductions === "function" ? reductions() : reductions;
 
-  function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
-  function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
-  function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
-  function dupe(o){return CIA._freeze(assign({}, o));}
-  
-	state = state || {};
+  if(typeof reductions  != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
+  if(typeof state  != "object") throw new TypeError("State Object cannot be a non-Object");
+
 	pool = Array.isArray(pool) ? pool : (typeof pool==="function" ? pool() : []);
-	
+
+	// turn each prop into an array for later expansion:
 	forEach(Object.keys(reductions), function(k){
 		var o=reductions[k]; 
 		if(!Array.isArray(o)) reductions[k]=[o];
@@ -241,6 +240,13 @@ CIA._blnPublishState = false; // if true, add a state property to instance to al
 CIA._blnPublishReducers = false; // if true, add a reducer property to the instance to allow customization
 CIA._blnStrictReducers = false; // if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
   
-return CIA;
-
+// common internal utils:
+function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
+function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
+function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
+function dupe(o){return CIA._freeze(assign({}, o));}
+  
+ // end packaging:  
+ return CIA;
+ 
 }));
