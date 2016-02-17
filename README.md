@@ -15,7 +15,7 @@
 * Pass a single object of methods `to on()` and `off()` to manage reducers in bulk
 
 
-Additional Features:
+## Additional Features:
 * Built-in event stream `.history` and thus, a simple `.undo()` implementation (naive)
 * Clear the `.history` with `.reset()`
 * Halt further execution from within the event handlers by setting `this.returnValue=false;`
