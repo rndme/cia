@@ -25,8 +25,8 @@ Additional Features:
 * Push certain events to another instance with `.push(events, instance)`
 * Pull certain events from another instance with `.pull(events, instance)`
 * Reduce given event type(s) only the next time they happen with `.once(event, reducer)`
-* Reduce a dependent event type only after another type with `.after(needyEvent, waitEvent, reducer)`
-* Reduce an event only before another type has fired with `.before(needyEvent, waitEvent, reducer)`
+* Reduce a dependent event type only after another type with `.after(needyEvent, strWaitEvent, reducer)`
+* Reduce an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
 
 
 
