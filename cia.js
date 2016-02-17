@@ -181,7 +181,8 @@ function CIA(reductions, state, pool) {
 	  
 		dispatch: function(strType, data){   // allows reducer return values to be fed to handlers via this:
 		  	var that=this;
-		  
+			if(strType.constructor===RegExp) strType = Object.keys(reductions).filter(/./.test, strType);
+
 		  forEach( arr(strType), function(strType){
 			
 			var heap = reductions[strType] || [],
