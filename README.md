@@ -27,6 +27,10 @@
 * Reduce given event type(s) only the next time they happen with `.once(event, reducer)`
 * Reduce a dependent event type only after another type with `.after(needyEvent, strWaitEvent, reducer)`
 * Reduce an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
+* `before()` and `after()` also take function conditionals instead of a string wait on type name
+* `dispatch()`ing a RegExp as a type triggers any reducer type that matches
+
+
 
 
 
