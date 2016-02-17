@@ -19,9 +19,11 @@ function CIA(reductions, state, pool) {
 
 	pool = Array.isArray(pool) ? pool : (typeof pool === "function" ? pool() : []);
 
+	var types= {};
 	// turn each prop into an array for later expansion:
 	forEach(Object.keys(reductions), function(k) {
 		var o = reductions[k];
+		types["$"+k] = k;
 		if(!Array.isArray(o)) reductions[k] = [o];
 	});
 
@@ -31,6 +33,7 @@ function CIA(reductions, state, pool) {
 		ret = {
 			returnValue: true,
 			history: [],
+			types: {},
 			undo: function(n) {
 				state = orig;
 				var r = this.history.slice(0, - (n || 1));
@@ -69,6 +72,7 @@ function CIA(reductions, state, pool) {
 					forEach(fnReducer, function(fnReducer) {
 						var r = reductions[strType] || (reductions[strType] = []);
 						r.push(fnReducer);
+						ret["$"+strType] = strType;
 						ret.dispatch("_ON_", [strType, fnReducer]);
 						if(flags[strType] != null) ret.dispatch(strType, flags[strType]);
 					});
@@ -89,12 +93,17 @@ function CIA(reductions, state, pool) {
 				if(!r) return false;
 				ret.dispatch("_OFF_", [strType, fnReducer]);
 				if(fnReducer === "*") {
+					delete ret["$"+strType];
 					return delete reductions[strType];
 				}
 
 				var index = r.indexOf(fnReducer);
 				if(index === -1) return false;
 				r.splice(index, 1);
+				if(!r.length){
+					delete ret["$"+strType];
+					delete reductions[strType];
+				}
 				return true;
 			},
 
@@ -235,6 +244,7 @@ function CIA(reductions, state, pool) {
 		};
 	if(CIA._blnPublishState) ret.state = state;
 	if(CIA._blnPublishReducers) ret.reducers = reducers;
+	assign(ret, types);
 	ret.dispatch.call(ret, "_INIT_", []);
 	return ret;
 }; // end CIA()
