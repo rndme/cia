@@ -95,6 +95,45 @@ function CIA(reductions, state, pool) {
 			r.splice(index, 1);
 			return true;
 		},
+
+
+		once: function(strType, fnReducer){
+
+			if(typeof strType==="object"){
+				forEach(Object.keys(strType), function(k){
+					ret.once(k, strType[k]);
+				});
+				return this;
+			}
+
+		  	if(!Array.isArray(fnReducer)) fnReducer = [fnReducer];
+
+		  	forEach( arr(strType), function(strType){
+				forEach(fnReducer, function(fnReducer){
+					ret.on(strType, function oncer(state, e){
+						fnReducer(state, e);
+						ret.off(strType, oncer);
+					});
+				});
+			});
+			return this;		
+		},
+
+		after: function(strType, triggerType, fnReducer){
+			var ok=ret.history.some(function(x){return x[0]===triggerType;});
+			if(ok) return ret.on(strType, fnReducer);
+			return ret.once(triggerType, fnReducer);
+		},
+
+		before: function(strType, triggerType, fnReducer){
+			var used=ret.history.some(function(x){return x[0]===triggerType;});
+			if(used) return ret;
+			ret.on(strType, fnReducer);
+			return ret.once(triggerType, function oncer(){
+				ret.off(strType, fnReducer);
+			});
+		},
+
 		subscribe: function(fnHandler, matcher){
 			pool.push(fnHandler);
 		  	fnHandler._matcher=matcher;
@@ -142,6 +181,13 @@ function CIA(reductions, state, pool) {
 		  });
 		  
 		   return this;
+		},
+	
+		reset: function(){
+			ret.history.length=0;
+			state = orig;
+			ret.dispatch.call(ret, "_INIT_", []);
+			return true;
 		}
 	};
 	ret.dispatch.call(ret, "_INIT_", []);
