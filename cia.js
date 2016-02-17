@@ -16,15 +16,17 @@
 
 
 function CIA(reductions, state, pool) {
-	if(typeof reductions  != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
-  
-    function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
-  	function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
+
+  if(typeof reductions  != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
+
+  function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
+  function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
+  function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
   
 	state = state || {};
 	pool = pool || [];
 	Object.keys(reductions).forEach(function(k){var o=reductions[k]; if(!Array.isArray(o))reductions[k]=[o];});
-  	var orig=Object.freeze(Object.assign({}, state)),
+  	var orig=Object.freeze(assign({}, state)),
 	flags={},
 	rxInternal = /^_[A-Z]+_$/,
 	ret={
@@ -38,7 +40,7 @@ function CIA(reductions, state, pool) {
 		},
 	  
 		getState: function(){ 
-			return Object.assign({}, state);
+			return assign({}, state);
 		},
 	  
 	  
