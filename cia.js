@@ -16,7 +16,7 @@ function CIA(reductions, state, pool) {
   function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
   function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
   function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
-  function dupe(o){return CIA.freeze(assign({}, o));}
+  function dupe(o){return CIA._freeze(assign({}, o));}
   
 	state = state || {};
 	pool = Array.isArray(pool) ? pool : (typeof pool==="function" ? pool() : []);
@@ -189,7 +189,10 @@ function CIA(reductions, state, pool) {
 			var heap = reductions[strType] || [],
 			isInternal = rxInternal.test(strType);
 	  
-			if(!heap.length && !isInternal) return ret.dispatch("_MISSING_", [strType, data]);
+			if(!heap.length && !isInternal){
+				if(CIA._blnStrictReducers) throw "Unknown reducer type dispatched: " + strType;
+				return ret.dispatch("_MISSING_", [strType, data]);	
+			} 
 
 		  	if(!isInternal) that.history.push([strType, data]);
 
@@ -226,13 +229,17 @@ function CIA(reductions, state, pool) {
 			return true;
 		}
 	};
+	if(CIA._blnPublishState) ret.state= state;
+	if(CIA._blnPublishReducers) ret.reducers= reducers;
 	ret.dispatch.call(ret, "_INIT_", []);
 	return ret;
 }; // end CIA()
 
 // config, available externally
-CIA.freeze=Object.freeze; // used to freeze state, change to just "Object" (or K) to allow mutable state properties.
-
+CIA._freeze=Object.freeze; // used to freeze state, change to just "Object" (or K) to allow mutable state properties.
+CIA._blnPublishState = false; // if true, add a state property to instance to allow outside mutations (not usually recommended)
+CIA._blnPublishReducers = false; // if true, add a reducer property to the instance to allow customization
+CIA._blnStrictReducers = false; // if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
   
 return CIA;
 
