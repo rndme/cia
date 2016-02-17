@@ -13,9 +13,28 @@
 * Name more than one event while subscribing ex:`.on("ADD,REM,CLR", fnRefresh)`
 * Give more than one handler when subscribing to an event ex:`.on("ADD", [fnValidate, fnDraw])`
 * Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
+* pass a single object of methods `to on()` and `off()` to manage reducers in bulk
 * Halt further execution from within the event handlers by setting `this.returnValue=false;`
 * Can dupe/alias/modify links at run-time and during execution - `on/off/subscribe/unsubscribe`
 * Mark "all actions" for certain events, or a conditional boolean function `.subscribe(fn, FLAG/FN)`
+* Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
+
+
+## Internal Events
+These events fire without explicit `dispatch()` calls to reflect the lifecyle and usage of the store.
+
+| Action | arguments[0] | Description |
+|----|----|----|
+|`_INIT_` | 	`[]` 	| the store is ready to use ; fired once at boot	|
+|`_SUBSCRIBE_` |	`[fnHandler, matcher]` |	a handler has subscribed to the "all event" pool |
+|`_UNSUBSCRIBE_` | `[fnHandler]`	| a handler has un-subscribed to the "all event" pool |
+|`_ON_` | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
+|`_OFF_` | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
+|`_MISSING_` | `[strType, data]` | a type without a known reducer was `dispatch()`ed |
+|`_ERROR_` | `[objError, strType, data]` | an exception was encountered in a reducer |
+
+
+
 
 
 ## Example
