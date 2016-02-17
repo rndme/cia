@@ -24,8 +24,10 @@ function CIA(reductions, state, pool) {
 	state = state || {};
 	pool = pool || [];
 	Object.keys(reductions).forEach(function(k){var o=reductions[k]; if(!Array.isArray(o))reductions[k]=[o];});
-  	var orig=Object.freeze(Object.assign({}, state));
-	var ret={
+  	var orig=Object.freeze(Object.assign({}, state)),
+	flags={},
+	rxInternal = /^_[A-Z]+_$/,
+	ret={
 	  	returnValue: true,
 		history: [],
 	  	undo: function(n){
@@ -39,71 +41,110 @@ function CIA(reductions, state, pool) {
 			return Object.assign({}, state);
 		},
 	  
-		unsubscribe: function(fnHandler){  
-			return pool = pool.filter(function(fn){return fn !== fnHandler;});
-		},
 	  
+		flag: function(strType, value){ // fires knowns and news when subscribed, good for ready()
+			forEach(arr(strType), function(strType){
+				flags[strType] = value;
+				ret.dispatch(strType, value);
+			});			
+		},
+
+		unflag: function(strType){ // un-set an auto-dispatch event
+			forEach(arr(strType), function(strType){
+				delete flags[strType];
+			});			
+		},
+
 		on: function(strType, fnReducer) {
+			if(typeof strType==="object"){
+				forEach(Object.keys(strType), function(k){
+					ret.on(k, strType[k]);
+				});
+				return this;
+			}
 		  	if(!Array.isArray(fnReducer)) fnReducer = [fnReducer];
 		  	forEach( arr(strType), function(strType){
 				forEach(fnReducer, function(fnReducer){
 					var r=reductions[strType] || (reductions[strType]=[]);
 					r.push(fnReducer);
-					this.history.push({type:"_ON_", event: strType, action: fnReducer });
+					ret.dispatch("_ON_", [strType, fnReducer]);
+					if(flags[strType]!=null) ret.dispatch(strType, flags[strType]);
 				});
 			});
 			return this;
 		},
 	  
 		off: function(strType, fnReducer) {
+
+			if(typeof strType==="object"){
+				forEach(Object.keys(strType), function(k){
+					ret.off(k, strType[k]);
+				});
+				return this;
+			}
+
 			var r=reductions[strType];
 			if(!r) return false;
+			ret.dispatch("_OFF_", [strType, fnReducer]);
 			if(fnReducer==="*"){
-			  this.history.push({type:"_OFF_", event: strType, action: fnReducer });
 			  return delete reductions[strType];
 			}
 		  
 			var index=r.indexOf(fnReducer);
 			if(index===-1) return false;
 			r.splice(index, 1);
-			this.history.push({type:"_OFF_", event: strType, action: fnReducer });
 			return true;
 		},
 		subscribe: function(fnHandler, matcher){
 			pool.push(fnHandler);
 		  	fnHandler._matcher=matcher;
+			ret.dispatch("_SUBSCRIBE_", [fnHandler, matcher]);
 			return this.unsubscribe.bind(this, fnHandler);
 		},
+
+		unsubscribe: function(fnHandler){  
+			pool = pool.filter(function(fn){return fn !== fnHandler;});
+			ret.dispatch("_UNSUBSCRIBE_", [fnHandler]);
+			return this;
+		},
 	  
-		dispatch: function(action, data){   // allows reducer return values to be fed to handlers via this:
+		dispatch: function(strType, data){   // allows reducer return values to be fed to handlers via this:
 		  	var that=this;
 		  
-		  forEach( arr(action), function(action){
+		  forEach( arr(strType), function(strType){
 			
-			var heap = reductions[action] || [];		  
-			if(!heap.length && action!="_INIT_" ) throw new ReferenceError("Unknown reducer group: "+action);
-		  	that.history.push([action, data]);
+			var heap = reductions[strType] || [];		  
+			if(!heap.length && !rxInternal.test(strType)) return ret.dispatch("_MISSING_", [strType, data]);
+
+		  	if(!rxInternal.test(strType)) that.history.push([strType, data]);
+
 		  	forEach(heap, function(fn){
+				try{
 			  	if(that.returnValue) state = fn.call(that, state, data) || state;
+				}catch(err){
+					ret.dispatch("_ERROR_", [err, strType, data]);
+				}
 			});
 		  	if(!that.returnValue){
 			 	that.returnValue=true; 
 			  	return that;
 			}
+
 			forEach(pool, function(fn){
 			  if(fn._matcher){
-				if(fn._matcher.call && !fn._matcher.call(that, action)) return;
-				if(action.search(fn._matcher)===-1) return;
+				if(fn._matcher.call && !fn._matcher.call(that, strType)) return;
+				if(strType.search(fn._matcher)===-1) return;
 			  }
 			  fn(state);
 			});
+
 			
 		  });
 		  
 		   return this;
 		}
 	};
-	ret.dispatch.call(ret, "_INIT_");
+	ret.dispatch.call(ret, "_INIT_", []);
 	return ret;
 }; // end CIA()
   
