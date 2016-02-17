@@ -134,6 +134,22 @@ function CIA(reductions, state, pool) {
 			});
 		},
 
+		push: function(strEvent, objCIA){
+			function pusher(state, e){
+				objCIA.dispatch(strEvent, e);
+			}
+			ret.on(strEvent, pusher);
+			return ret.off.bind(ret, strEvent, pusher);			
+		},
+
+		pull: function(strEvent, objCIA){
+			function puller(state, e){
+				ret.dispatch(strEvent, e);
+			}
+			objCIA.on(strEvent, puller);
+			return objCIA.off.bind(objCIA, strEvent, puller);
+		},
+
 		subscribe: function(fnHandler, matcher){
 			pool.push(fnHandler);
 		  	fnHandler._matcher=matcher;
@@ -152,14 +168,16 @@ function CIA(reductions, state, pool) {
 		  
 		  forEach( arr(strType), function(strType){
 			
-			var heap = reductions[strType] || [];		  
-			if(!heap.length && !rxInternal.test(strType)) return ret.dispatch("_MISSING_", [strType, data]);
+			var heap = reductions[strType] || [],
+			isInternal = rxInternal.test(strType);
+	  
+			if(!heap.length && !isInternal) return ret.dispatch("_MISSING_", [strType, data]);
 
-		  	if(!rxInternal.test(strType)) that.history.push([strType, data]);
+		  	if(!isInternal) that.history.push([strType, data]);
 
 		  	forEach(heap, function(fn){
 				try{
-			  	if(that.returnValue) state = fn.call(that, state, data) || state;
+			  		if(that.returnValue) state = fn.call(that, state, data) || state;
 				}catch(err){
 					ret.dispatch("_ERROR_", [err, strType, data]);
 				}
