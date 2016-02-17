@@ -242,17 +242,17 @@ function CIA(reductions, state, pool) {
 }; // end CIA()
 
 
-	// config, available externally
-	CIA._freeze= Object.freeze; 	// used to freeze state, change to just "Object" (or K) to allow mutable state properties.
-	CIA._blnPublishState= false; 	// if true, add a state property to instance to allow outside mutations (not usually recommended)
-	CIA._blnPublishReducers= false;	// if true, add a reducer property to the instance to allow customization
-	CIA._blnStrictReducers= false;	// if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
+// config, available externally
+CIA._freeze= Object.freeze; 	// used to freeze state, change to just "Object" (or K) to allow mutable state properties.
+CIA._blnPublishState= false; 	// if true, add a state property to instance to allow outside mutations (not usually recommended)
+CIA._blnPublishReducers= false;	// if true, add a reducer property to the instance to allow customization
+CIA._blnStrictReducers= false;	// if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
 
-	// common internal utils:
-	function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
-	function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
-	function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
-	function dupe(o){return CIA._freeze(assign({}, o));}
+// common internal utils:
+function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
+function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
+function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
+function dupe(o){return CIA._freeze(assign({}, o));}
 
  // end packaging:  
   return CIA;
