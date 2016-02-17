@@ -94,10 +94,6 @@ which  shows:
 	},
 	[
 		[
-			"_INIT_",
-			null
-		],
-		[
 			"ADD",
 			null
 		],
