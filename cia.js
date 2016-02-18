@@ -131,9 +131,12 @@ function CIA(reductions, state, pool) {
 		},
 
 		when: function(property, value, type, data){
-			// given a property and a value or conditional function, dispatch a given event with given data
+			// given a property and a value or array of possible values, dispatch a given event with given data
 			return ret.on("*", function handler(state, data){
-				if(state[property] === value && !handler.spent){
+				if(  (  Array.isArray(value) ? 
+					(value.indexOf(state[property]) !== -1) : 
+					(state[property]===value)
+				     ) && !handler.spent ){
 					handler.spent = true;
 					ret.off("*", handler);
 					ret.dispatch(type, data);
