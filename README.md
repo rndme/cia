@@ -1,7 +1,7 @@
 # CIA
 ## Centralized Inner Authority
 
-### A flux/redux-like central dispatcher providing a single source of truth.
+### A redux-like central dispatcher providing a single source of truth.
 Ever notice how the redux API looks like an EventEmitter? Me too, and I also noticed it doesn't have very many features. I wrote CIA to provide more features while preserving the basic concept.
 
 ## Setup:
@@ -17,13 +17,12 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * Returning state in a reducer is optional; defaults to existing state
 * Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD", 4)`
 * Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
-* `.subscribe(fn)` _subscription_ callbacks after state-changes; for rendering, backup, etc...
-
+* `.subscribe(fn)` state-changed callbacks for rendering, backup, etc...
 
 
 ## Additional Features:
 
-## System:
+### System:
 * Built-in event stream `.history` and thus, a simple `.undo()` implementation (naive)
 * Clear the `.history` with `.reset()`
 * Push certain events to another instance with `.push(events, instance)`
@@ -31,7 +30,7 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * Mark _subscription_ for certain events, or a conditional function `.subscribe(fn, strName(s)/fnBoolean)`
 
 
-## Binding Reducers:
+### Binding Reducers:
 * Wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
 * Pass a single object of methods `to on()` and `off()` to manage reducers in bulk
 * Name more than one event while subscribing ex:`.on("ADD,REM,CLR", fnRefresh)`
@@ -45,15 +44,13 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * `.now()` is just like `.on()` except that it dispatches immediately after subscribing  
  
 
-## Dispatching Actions:
+### Dispatching Actions:
 * `dispatch()`ing a RegExp as a type triggers any matching reducer type(s)
 * Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
 * Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
 * Non-strings: dispatch `reducers.KEY`or `.types.KEY` instead of `"KEY"` for validity and IDE happiness
 * Action Creators: types can be invoked as methods using `.actions.KEY(data)`, call/apply set `this`
 * Over-ride un-bound conexts on `.dispatch()` with a third argument; the `this` value for the reducers
-
-
 
 
 ## Options
@@ -77,13 +74,13 @@ These events fire without explicit `dispatch()` calls to reflect the lifecyle an
 
 | Action | arguments[0] | Description |
 |----|----|----|
-|`_INIT_` | 	`[]` 	| the store is ready to use ; fired once at boot	|
-|`_SUBSCRIBE_` |	`[fnHandler, matcher]` |	a handler has subscribed to the state-changed pool |
-|`_UNSUBSCRIBE_` | `[fnHandler]`	| a handler has un-subscribed to the state-changed pool |
-|`_ON_` | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
-|`_OFF_` | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
-|`_MISSING_` | `[strType, data]` | a type without a known reducer was `dispatch()`ed |
-|`_ERROR_` | `[objError, strType, data]` | an exception was encountered in a reducer |
+|\_INIT\_ |`[]` 	| the store is ready to use ; fired once at boot	|
+|\_SUBSCRIBE\_ |`[fnHandler, matcher]` |	a handler has subscribed to the state-changed pool |
+|\_UNSUBSCRIBE\_ | `[fnHandler]`	| a handler has un-subscribed to the state-changed pool |
+|\_ON\_ | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
+|\_OFF\_ | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
+|\_MISSING\_ | `[strType, data]` | a type without a known reducer was `dispatch()`ed |
+|\_ERROR\_ | `[objError, strType, data]` | an exception was encountered in a reducer |
 
 
 
