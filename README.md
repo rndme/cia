@@ -41,13 +41,15 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * Wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
 * Non-string types: pass `reducers.KEY` instead of `"KEY"` as a type for validity and IDE happiness
 * Non-string types: pass `instance.$KEY` instead of `"KEY"` as a type for validity and IDE happiness
-* `.bind(context)` to reducers for BYO-context; internals don't use `this` to `.dispatch()`
+* `.bind(context)` to reducers for BYO-context; internals don't need `this` to `.dispatch()`
+* Over-ride unbound conexts on `.dispatch()` with a third argument; the `this` value for the reducers
 * Reducer definition object can have an array of many reducers under one type property name.
-* 
+
 
 
 ## Options
-Options are set globally, and percolate to an instance upon instantiation. You can modify the options on the instance for more localized control.
+Options are set globally, and percolate to an instance upon instantiation. You can modify the options on the instance for more localized control. The publish options affect setup, and thus can only be applied globally before instantiation; you can set them true, create an instance, and set them false after that to instantiate unique-options instances.
+
 
 Globally, these are set as `CIA._optionName`, and on the instance as `_optionName`
 
