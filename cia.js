@@ -144,6 +144,18 @@ function CIA(reductions, state, pool) {
 			});
 		},
 		
+		watch: function(property, type){
+			// given a property , dispatch a given event when the property value changes
+			var value = state[property];
+			return ret.on("*", function handler(state, data){
+				if(state[property] !== value && !handler.spent){
+					handler.spent = true;
+					ret.dispatch(type, {property: property, was: value, now: value=state[property]});
+					handler.spent = false;
+				}
+			});
+		},		
+		
 		after: function(strType, trigger, fnReducer) {// like on(), but removes itself once the trigger has occurred
 			if(typeof trigger === "function") return ret.on(strType, function wait(state, data) {
 				if(trigger(state, data)) {
@@ -234,7 +246,6 @@ function CIA(reductions, state, pool) {
 
 				if(ret._blnErrorThrowing) {
 					forEach(heap, function(fn) {
-
 						state = (context ? fn.call(context, state, data) : fn(state, data)) || state;
 					});
 				} else { // catch errors:
@@ -306,4 +317,4 @@ function dupe(o){return CIA._freeze(assign({}, o));}
  // end packaging:  
   return CIA;
 
-}));
+}, this));
