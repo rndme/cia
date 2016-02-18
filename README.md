@@ -15,35 +15,42 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 ## Alterations from redux:
 * Accepts opbject of methods instead of hard-coded `switch(action.type)` statements
 * Returning state in a reducer is optional; defaults to existing state
-* Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD",4)`
-* Subscribe actions to typed events w/ `.on(type, fn)` and  `.dispatch("INCREMENT")` to fire action(s)
-* `.subscribe(fn)` "all actions" to run after individual events - to render, backup, etc
-* Name more than one event while subscribing ex:`.on("ADD,REM,CLR", fnRefresh)`
-* Give more than one handler when subscribing to an event ex:`.on("ADD", [fnValidate, fnDraw])`
-* Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
-* Pass a single object of methods `to on()` and `off()` to manage reducers in bulk
+* Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD", 4)`
+* Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
+* `.subscribe(fn)` _subscription_ callbacks after state-changes; for rendering, backup, etc...
+
 
 
 ## Additional Features:
+
+## System:
 * Built-in event stream `.history` and thus, a simple `.undo()` implementation (naive)
 * Clear the `.history` with `.reset()`
-* Context-free reducer invocation means you can bind `this` in your reducers without drawbacks.
-* Can dupe/alias/modify links at run-time and during execution - `on/off/subscribe/unsubscribe`
-* Mark "all actions" for certain events, or a conditional boolean function `.subscribe(fn, FLAG/FN)`
-* Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
 * Push certain events to another instance with `.push(events, instance)`
 * Pull certain events from another instance with `.pull(events, instance)`
-* Reduce given event type(s) only the next time they happen with `.once(event, reducer)`
-* Reduce a dependent event type only after another type with `.after(needyEvent, strWaitEvent, reducer)`
-* Reduce an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
-* `before()` and `after()` also take function conditionals instead of a string wait on type name
-* `dispatch()`ing a RegExp as a type triggers any reducer type that matches
+* Mark _subscription_ for certain events, or a conditional function `.subscribe(fn, strName(s)/fnBoolean)`
+
+
+## Binding Reducers:
 * Wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
-* Non-string types: pass `reducers.KEY` instead of `"KEY"` as a type for validity and IDE happiness
-* Non-string types: pass `instance.$KEY` instead of `"KEY"` as a type for validity and IDE happiness
-* `.bind(context)` to reducers for BYO-context; internals don't need `this` to `.dispatch()`
-* Over-ride unbound conexts on `.dispatch()` with a third argument; the `this` value for the reducers
+* Pass a single object of methods `to on()` and `off()` to manage reducers in bulk
+* Name more than one event while subscribing ex:`.on("ADD,REM,CLR", fnRefresh)`
+* Give more than one handler when subscribing to an event ex:`.on("ADD", [fnValidate, fnDraw])`
 * Reducer definition object can have an array of many reducers under one type property name.
+* Reduce on given event type(s) only the next time they happen with `.once(event, reducer)`
+* Reduce on a dependent event type only after another type with `.after(needyEvent, strWaitEvent, reducer)`
+* Reduce on an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
+* `before()` and `after()` also take function conditionals for _waiting_ instead of a string type name
+* Context-free reducer invocation means you can bind `this` in your reducers without drawbacks.
+ 
+
+## Dispatching Actions:
+* `dispatch()`ing a RegExp as a type triggers any reducer type that matches
+* Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
+* Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
+* Non-strings: dispatch `reducers.KEY`or `instance.$KEY` instead of `"KEY"` for validity and IDE happiness
+* Over-ride un-bound conexts on `.dispatch()` with a third argument; the `this` value for the reducers
+
 
 
 
