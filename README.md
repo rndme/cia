@@ -2,6 +2,7 @@
 ## Centralized Inner Authority
 
 ### A flux/redux-like central dispatcher providing a single source of truth.
+Ever notice how the redux API looks like an EventEmitter? Me too, and I also noticed it doesn't have very many features. I wrote CIA to provide more features while preserving the basic concept.
 
 ## Setup:
 `npm install cia` or `bower install cia`
@@ -37,11 +38,24 @@
 * Reduce an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
 * `before()` and `after()` also take function conditionals instead of a string wait on type name
 * `dispatch()`ing a RegExp as a type triggers any reducer type that matches
-* wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
-* non-string types: pass `reducers.KEY` instead of `"KEY"` as a type for validity and IDE happiness
-* non-string types: pass `instance.$KEY` instead of `"KEY"` as a type for validity and IDE happiness
+* Wildcards: `*` as reducer prop fires on all types, `.off('TYPE', '*')` removes all TYPE reducers
+* Non-string types: pass `reducers.KEY` instead of `"KEY"` as a type for validity and IDE happiness
+* Non-string types: pass `instance.$KEY` instead of `"KEY"` as a type for validity and IDE happiness
 * `.bind(context)` to reducers for BYO-context; internals don't use `this` to `.dispatch()`
+* Reducer definition object can have an array of many reducers under one type property name.
+* 
 
+
+## Options
+Options are set globally, and percolate to an instance upon instantiation. You can modify the options on the instance for more localized control.
+
+Globally, these are set as `CIA._optionName`, and on the instance as `_optionName`
+
+`._freeze= Object.freeze;`	used to freeze state, change to just "Object" (or K) to allow mutable state properties. <br />
+`._blnPublishState`	if true, add a state property to instance to allow outside mutations (not usually recommended) <br />
+`._blnPublishReducers`	if true, add a reducer property to the instance to allow customization <br />
+`._blnStrictReducers`	if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal <br />
+`._blnErrorThrowing`	if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal <br />
 
 
 
