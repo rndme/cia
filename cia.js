@@ -19,13 +19,13 @@ function CIA(reductions, state, pool) {
 
 	pool = Array.isArray(pool) ? pool : (typeof pool === "function" ? pool() : []);
 
-	var types= {}, oDef = reductions;
+	var types = {}, oDef = reductions;
 	reductions = assign({}, reductions); //dupe reductions
 
 	// turn each prop into an array for later expansion:
 	forEach(Object.keys(reductions), function(k) {
 		var o = reductions[k];
-		types["$"+k] = k;
+		types["$" + k] = k;
 		if(!Array.isArray(o)) reductions[k] = [o];
 	});
 
@@ -73,7 +73,7 @@ function CIA(reductions, state, pool) {
 					forEach(fnReducer, function(fnReducer) {
 						var r = reductions[strType] || (reductions[strType] = []);
 						r.push(fnReducer);
-						ret["$"+strType] = strType;
+						ret["$" + strType] = strType;
 						ret.dispatch("_ON_", [strType, fnReducer]);
 						if(flags[strType] != null) ret.dispatch(strType, flags[strType]);
 					});
@@ -94,7 +94,7 @@ function CIA(reductions, state, pool) {
 				if(!r) return false;
 				ret.dispatch("_OFF_", [strType, fnReducer]);
 				if(fnReducer === "*") {
-					delete ret["$"+strType];
+					delete ret["$" + strType];
 					return delete reductions[strType];
 				}
 
@@ -102,8 +102,8 @@ function CIA(reductions, state, pool) {
 				if(index === -1) return false;
 				r.splice(index, 1);
 
-				if(!r.length){
-					delete ret["$"+strType];
+				if(!r.length) {
+					delete ret["$" + strType];
 					delete reductions[strType];
 				}
 				return true;
@@ -199,8 +199,11 @@ function CIA(reductions, state, pool) {
 			dispatch: function(strType, data, context) { // allows reducer return values to be fed to handlers via this:
 
 				if(strType.constructor === RegExp) strType = Object.keys(reductions).filter(/./.test, strType).join(",");
-				if(Array.isArray(strType) && arr(strType)[0] == strType[0] ) strType = strType.join(",");
-				if(typeof strType != "string") for(var k in oDef) if(oDef[k]===strType){ strType = k; break; }
+				if(Array.isArray(strType) && arr(strType)[0] == strType[0]) strType = strType.join(",");
+				if(typeof strType != "string") for(var k in oDef) if(oDef[k] === strType) {
+					strType = k;
+					break;
+				}
 
 				forEach(arr(strType), function(strType) {
 
@@ -212,19 +215,19 @@ function CIA(reductions, state, pool) {
 						return ret.dispatch("_MISSING_", [strType, data]);
 					}
 
-					if( "*" in reductions) heap=heap.concat( reductions['*'] );
-					
+					if("*" in reductions) heap = heap.concat(reductions['*']);
+
 					if(!isInternal) ret.history.push([strType, data]);
 
-					if(ret._blnErrorThrowing){
+					if(ret._blnErrorThrowing) {
 						forEach(heap, function(fn) {
-							
-							state = ( context ? fn.call(context, state, data) : fn(state, data) ) || state;
+
+							state = (context ? fn.call(context, state, data) : fn(state, data)) || state;
 						});
-					}else{ // catch errors:
+					} else { // catch errors:
 						forEach(heap, function(fn) {
 							try {
-								state = ( context ? fn.call(context, state, data) : fn(state, data) ) || state;
+								state = (context ? fn.call(context, state, data) : fn(state, data)) || state;
 							} catch(err) {
 								ret.dispatch("_ERROR_", [err, strType, data]);
 							}
@@ -232,7 +235,7 @@ function CIA(reductions, state, pool) {
 					} //end if throw on errors?
 
 					forEach(pool, function(fn) {
-						if(fn[1] && ((fn[1].call && !fn[1](strType)) || (strType.search(fn[1]) === -1) )) return;
+						if(fn[1] && ((fn[1].call && !fn[1](strType)) || (strType.search(fn[1]) === -1))) return;
 						fn[0].call(ret, state);
 					});
 
@@ -250,9 +253,11 @@ function CIA(reductions, state, pool) {
 			}
 		};
 
-	forEach(Object.keys(CIA), function(k){ ret[k]=CIA[k]; }); // "inherit" options to instance
+	forEach(Object.keys(CIA), function(k) {
+		ret[k] = CIA[k];
+	}); // "inherit" options to instance
 
-	if(ret._blnPublishState) ret.state = state;	// if publish state?
+	if(ret._blnPublishState) ret.state = state; // if publish state?
 	if(ret._blnPublishReducers) ret.reducers = reducers; // if publish reducers?
 
 	assign(ret, types);
