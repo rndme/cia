@@ -1,5 +1,5 @@
 // cia.js  by dandavis [CCBY4]
-(function(b,a){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a({}):b.CIA=a(b)}(this,function(pub){
+(function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.CIA=a()}(function(){
 
 function CIA(reductions, state, pool) {
 
@@ -235,7 +235,7 @@ function CIA(reductions, state, pool) {
 
 				function finish(){
 					forEach(pool, function(fn) {
-						if(fn[1] && ((fn[1].call && !fn[1](strType)) || (strType.search(fn[1]) === -1))) return;
+						if(fn[1]&&((fn[1].call && !fn[1](strType))||(strType.search(fn[1]) === -1)))return;
 						fn[0].call(ret, state);
 					});
 				}
@@ -292,4 +292,4 @@ function dupe(o){return CIA._freeze(assign({}, o));}
  // end packaging:  
   return CIA;
 
-}));
+}, this));
