@@ -66,7 +66,26 @@ Globally, these are set as `CIA._optionName`, and on the instance as `_optionNam
 `._blnErrorThrowing`	if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal <br />
 
 
+## Methods
 
+`.after(strType, trigger, fnReducer)` - like on(), but removes itself once the trigger has occurred <br>
+`.before(strType, trigger, fnReducer)` - like on(), but won't execute unless the trigger has occurred <br>
+`.dispatch(strType, data, context)` - allows reducer return values to be fed to handlers via this: <br>
+`.flag(strType, value)` - fires knowns and news when subscribed, good for ready() <br>
+`.getState()` - returns a representation of the internal state <br>
+`.now(strType, fnReducer, context)` - like on, but dispatches the event upon adding <br>
+`.off(strType, fnReducer)` - remove a reducer by type and function, or "*" for all <br>
+`.on(strType, fnReducer)` - adds reducer(s) for type(s) <br>
+`.once(strType, fnReducer)` - like on(), but removes after the first time it fires. <br>
+`.pull(strEvent, objCIA)` - dispatch an event FROM another instance when it happens remotely <br>
+`.push(strEvent, objCIA)` - dispatch an event ON another instance when it happens locally <br>
+`.reset()` - empties the state change history, restores the state to initial, and dispatches _INIT_ <br>
+`.subscribe(fnHandler, matcher)` - add handlers that execute after state changes <br>
+`.undo(n)` - restore initial state and re-fire events 0 - (last - n) <br>
+`.unflag(strType)` - un-set an auto-dispatch event <br>
+`.unsubscribe(fnHandler)` - removes handlers that execute after state changes <br>
+`.watch(property, type)` - given a property , dispatch a given event when the property value changes <br>
+`.when(property, value, type, data)` - given a property and value/array of values, dispatch a given event with given data
 
 
 ## Internal Events
@@ -81,6 +100,7 @@ These events fire without explicit `dispatch()` calls to reflect the lifecyle an
 |\_OFF\_ | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
 |\_MISSING\_ | `[strType, data]` | a type without a known reducer was `dispatch()`ed |
 |\_ERROR\_ | `[objError, strType, data]` | an exception was encountered in a reducer |
+
 
 
 
