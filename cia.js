@@ -28,7 +28,7 @@ function CIA(reductions, state, pool) {
 	rxInternal = /^_[A-Z]+_$/,
 	ret = {
 		history: [],
-		undo: function(n) {
+		undo: function(n) { // restore initial state and re-fire events 0 - (last - n)
 			state = orig;
 			var r = this.history.slice(0, - (n || 1));
 			this.history.length = 0;
@@ -37,7 +37,7 @@ function CIA(reductions, state, pool) {
 			}, this);
 		},
 
-		getState: function() {
+		getState: function() { // returns a representation of the internal state
 			return dupe(state);
 		},
 
@@ -131,7 +131,7 @@ function CIA(reductions, state, pool) {
 		},
 
 		when: function(property, value, type, data){
-			// given a property and a value or array of possible values, dispatch a given event with given data
+			// given a property and value/array of values, dispatch a given event with given data
 			return ret.on("*", function handler(state, data){
 				if(  (  Array.isArray(value) ? 
 					(value.indexOf(state[property]) !== -1) : 
@@ -278,7 +278,7 @@ function CIA(reductions, state, pool) {
 			return this;
 		},
 
-		reset: function() {
+		reset: function() { // empties the state change history, restores the state to initial, and dispatches _INIT_
 			ret.history.length = 0;
 			state = orig;
 			ret.dispatch.call(ret, "_INIT_", []);
@@ -316,5 +316,9 @@ function dupe(o){return CIA._freeze(assign({}, o));}
 
  // end packaging:  
   return CIA;
-
+  
+/* toc maker:
+ Object.keys(store).filter(a=>store[a].call).map(a=>"`."+a+"("+store[a].toString().split(")")[0].split("(")[1].trim()+")` - " + 
+  (store[a].toString().match(/\/\/[\w\W]+?$/m)||[""])[0].slice(2).trim()).sort().join(" <br>\n")    */
+  
 }, this));
