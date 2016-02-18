@@ -76,8 +76,8 @@ These events fire without explicit `dispatch()` calls to reflect the lifecyle an
 | Action | arguments[0] | Description |
 |----|----|----|
 |`_INIT_` | 	`[]` 	| the store is ready to use ; fired once at boot	|
-|`_SUBSCRIBE_` |	`[fnHandler, matcher]` |	a handler has subscribed to the "all event" pool |
-|`_UNSUBSCRIBE_` | `[fnHandler]`	| a handler has un-subscribed to the "all event" pool |
+|`_SUBSCRIBE_` |	`[fnHandler, matcher]` |	a handler has subscribed to the state-changed pool |
+|`_UNSUBSCRIBE_` | `[fnHandler]`	| a handler has un-subscribed to the state-changed pool |
 |`_ON_` | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
 |`_OFF_` | `[strType, fnReducer]`	| a reducer has subscribed to a specific type of event |
 |`_MISSING_` | `[strType, data]` | a type without a known reducer was `dispatch()`ed |
