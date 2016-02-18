@@ -61,7 +61,7 @@ Options are set globally, and percolate to an instance upon instantiation. You c
 
 Globally, these are set as `CIA._optionName`, and on the instance as `_optionName`
 
-`._freeze= Object.freeze;`	used to freeze state, change to just "Object" (or K) to allow mutable state properties. <br />
+`._freeze= Object.freeze;`	used to freeze state, change to just "Object" for mutable state, or a deep freezer. <br />
 `._blnPublishState`	if true, add a state property to instance to allow outside mutations (not usually recommended) <br />
 `._blnPublishReducers`	if true, add a reducer property to the instance to allow customization <br />
 `._blnStrictReducers`	if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal <br />
