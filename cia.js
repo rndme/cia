@@ -19,7 +19,9 @@ function CIA(reductions, state, pool) {
 
 	pool = Array.isArray(pool) ? pool : (typeof pool === "function" ? pool() : []);
 
-	var types= {};
+	var types= {}, oDef = reductions;
+	reductions = assign({}, reductions); //dupe reductions
+
 	// turn each prop into an array for later expansion:
 	forEach(Object.keys(reductions), function(k) {
 		var o = reductions[k];
@@ -100,6 +102,7 @@ function CIA(reductions, state, pool) {
 				var index = r.indexOf(fnReducer);
 				if(index === -1) return false;
 				r.splice(index, 1);
+
 				if(!r.length){
 					delete ret["$"+strType];
 					delete reductions[strType];
@@ -195,11 +198,11 @@ function CIA(reductions, state, pool) {
 				return this;
 			},
 
-			dispatch: function(strType, data) { // allows reducer return values to be fed to handlers via this:
-				var that = this;
+			dispatch: function(strType, data, context) { // allows reducer return values to be fed to handlers via this:
+
 				if(strType.constructor === RegExp) strType = Object.keys(reductions).filter(/./.test, strType).join(",");
 				if(Array.isArray(strType) && arr(strType)[0] == strType[0] ) strType = strType.join(",");
-				if(typeof strType != "string") for(var k in reductions) if(reductions[k]===strType){ strType = reductions[k]; break; }
+				if(typeof strType != "string") for(var k in oDef) if(oDef[k]===strType){ strType = k; break; }
 
 				forEach(arr(strType), function(strType) {
 
@@ -207,7 +210,7 @@ function CIA(reductions, state, pool) {
 						isInternal = rxInternal.test(strType);
 
 					if(!heap.length && !isInternal) {
-						if(CIA._blnStrictReducers) throw "Unknown reducer type dispatched: " + strType;
+						if(ret._blnStrictReducers) throw new TypeError("Unknown reducer type dispatched: " + strType);
 						return ret.dispatch("_MISSING_", [strType, data]);
 					}
 
@@ -215,13 +218,20 @@ function CIA(reductions, state, pool) {
 					
 					if(!isInternal) ret.history.push([strType, data]);
 
-					forEach(heap, function(fn) {
-						try {
-							state = fn(state, data) || state;
-						} catch(err) {
-							ret.dispatch("_ERROR_", [err, strType, data]);
-						}
-					});
+					if(ret._blnErrorThrowing){
+						forEach(heap, function(fn) {
+							
+							state = ( context ? fn.call(context, state, data) : fn(state, data) ) || state;
+						});
+					}else{ // catch errors:
+						forEach(heap, function(fn) {
+							try {
+								state = ( context ? fn.call(context, state, data) : fn(state, data) ) || state;
+							} catch(err) {
+								ret.dispatch("_ERROR_", [err, strType, data]);
+							}
+						});
+					} //end if throw on errors?
 
 					forEach(pool, function(fn) {
 						if(fn._matcher) {
@@ -244,19 +254,24 @@ function CIA(reductions, state, pool) {
 				return true;
 			}
 		};
-	if(CIA._blnPublishState) ret.state = state;
-	if(CIA._blnPublishReducers) ret.reducers = reducers;
+
+	forEach(Object.keys(CIA), function(k){ ret[k]=CIA[k]; }); // "inherit" options to instance
+
+	if(ret._blnPublishState) ret.state = state;	// if publish state?
+	if(ret._blnPublishReducers) ret.reducers = reducers; // if publish reducers?
+
 	assign(ret, types);
 	ret.dispatch.call(ret, "_INIT_", []);
 	return ret;
 }; // end CIA()
 
 
-// config, available externally
+// global config, available externally
 CIA._freeze= Object.freeze; 	// used to freeze state, change to just "Object" (or K) to allow mutable state properties.
 CIA._blnPublishState= false; 	// if true, add a state property to instance to allow outside mutations (not usually recommended)
 CIA._blnPublishReducers= false;	// if true, add a reducer property to the instance to allow customization
 CIA._blnStrictReducers= false;	// if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
+CIA._blnErrorThrowing= false;	// if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal
 
 // common internal utils:
 function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
