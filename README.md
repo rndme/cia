@@ -42,6 +42,7 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * Reduce on an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
 * `before()` and `after()` also take function conditionals for _waiting_ instead of a string type name
 * Context-free reducer invocation means you can bind `this` in your reducers without drawbacks.
+* `.now()` is just like `.on()` except that it dispatches immediately after subscribing  
  
 
 ## Dispatching Actions:
