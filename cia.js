@@ -1,13 +1,5 @@
 // cia.js  by dandavis [CCBY4]
-(function(root, factory) {
-	if(typeof define === 'function' && define.amd) {
-		define([], factory);
-	} else if(typeof exports === 'object') {
-		module.exports = factory({});
-	} else {
-		root.CIA = factory(root);
-	}
-}(this, function(pub) {
+(function(b,a){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a({}):b.CIA=a(b)}(this,function(pub){
 
 function CIA(reductions, state, pool) {
 
