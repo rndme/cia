@@ -46,7 +46,7 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
  
 
 ## Dispatching Actions:
-* `dispatch()`ing a RegExp as a type triggers any reducer type that matches
+* `dispatch()`ing a RegExp as a type triggers any matching reducer type(s)
 * Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
 * Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
 * Non-strings: dispatch `reducers.KEY`or `instance.$KEY` instead of `"KEY"` for validity and IDE happiness
