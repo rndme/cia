@@ -11,15 +11,16 @@ function CIA(reductions, state, pool) {
 
 	pool = Array.isArray(pool) ? pool : (typeof pool === "function" ? pool() : []);
 
-	var types = {}, 
+	var types = {types:{}, actions: {}}, 
 	oDef = reductions;
 	reductions = assign({}, reductions); //dupe reductions
 
 	// turn each prop into an array for later expansion:
 	forEach(Object.keys(reductions), function(k) {
 		var o = reductions[k];
-		types["$" + k] = k;
 		if(!Array.isArray(o)) reductions[k] = [o];
+		types.types[k]=k;
+		types.actions[k]=function(data){ return ret.dispatch(k, data, this); };
 	});
 
 	var orig = dupe(state),
@@ -27,7 +28,6 @@ function CIA(reductions, state, pool) {
 	rxInternal = /^_[A-Z]+_$/,
 	ret = {
 		history: [],
-		types: {},
 		undo: function(n) {
 			state = orig;
 			var r = this.history.slice(0, - (n || 1));
