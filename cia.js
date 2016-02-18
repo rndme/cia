@@ -54,6 +54,12 @@ function CIA(reductions, state, pool) {
 			});
 		},
 
+		now:  function(strType, fnReducer, context) {
+			ret.on(strType, fnReducer);
+			ret.dispatch(strType, context);
+			return this;
+		},
+
 		on: function(strType, fnReducer) {
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
