@@ -233,14 +233,23 @@ function CIA(reductions, state, pool) {
 					});
 				} //end if throw on errors?
 
-				forEach(pool, function(fn) {
-					if(fn[1] && ((fn[1].call && !fn[1](strType)) || (strType.search(fn[1]) === -1))) return;
-					fn[0].call(ret, state);
-				});
+				function finish(){
+					forEach(pool, function(fn) {
+						if(fn[1] && ((fn[1].call && !fn[1](strType)) || (strType.search(fn[1]) === -1))) return;
+						fn[0].call(ret, state);
+					});
+				}
 
-
+				if(ret._blnDeferSubscriptions){
+					clearTimeout(ret._timer);
+					ret._timer=setTimeout(finish, ret._blnDeferPeriod || 15);
+				}else{
+					finish();
+				}
+				
 			});
 
+			
 			return this;
 		},
 
@@ -267,11 +276,13 @@ function CIA(reductions, state, pool) {
 
 // global config, available externally
 CIA._freeze= Object.freeze; 	// used to freeze state, change to just "Object" (or K) to allow mutable state properties.
-CIA._blnPublishState= false; 	// if true, add a state property to instance to allow outside mutations (not usually recommended)
-CIA._blnPublishReducers= false;	// if true, add a reducer property to the instance to allow customization
-CIA._blnStrictReducers= false;	// if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
-CIA._blnErrorThrowing= false;	// if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal
-
+CIA._blnPublishState= false; 	// add a state property to instance to allow outside mutations (not usually recommended)
+CIA._blnPublishReducers= false;	// add a reducer property to the instance to allow customization
+CIA._blnStrictReducers= false;	// dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
+CIA._blnErrorThrowing= false;	//  throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal
+CIA._blnDeferSubscriptions= false;// debounce state-change callbacks to reduce CPU. note: only last event of cluster will be passed
+CIA._blnDeferPeriod = 15 ;	// w/_blnDeferSubscriptions, # of ms to wait for activity to cease before firing a state-change
+				
 // common internal utils:
 function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
 function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
