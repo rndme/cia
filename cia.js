@@ -54,13 +54,13 @@ function CIA(reductions, state, pool) {
 			});
 		},
 
-		now:  function(strType, fnReducer, context) {
+		now:  function(strType, fnReducer, context) { // like on, but dispatches the event upon adding
 			ret.on(strType, fnReducer);
 			ret.dispatch(strType, context);
 			return this;
 		},
 
-		on: function(strType, fnReducer) {
+		on: function(strType, fnReducer) { // adds reducer(s) for type(s)
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
 					ret.on(k, strType[k]);
@@ -80,7 +80,7 @@ function CIA(reductions, state, pool) {
 			return this;
 		},
 
-		off: function(strType, fnReducer) {
+		off: function(strType, fnReducer) { // remove a reducer by type and function, or "*" for all
 
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
@@ -108,7 +108,7 @@ function CIA(reductions, state, pool) {
 			return true;
 		},
 
-		once: function(strType, fnReducer) {
+		once: function(strType, fnReducer) { //like on(), but removes after the first time it fires.
 
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
@@ -130,7 +130,18 @@ function CIA(reductions, state, pool) {
 			return this;
 		},
 
-		after: function(strType, trigger, fnReducer) {
+		when: function(property, value, type, data){
+			// given a property and a value or conditional function, dispatch a given event with given data
+			return ret.on("*", function handler(state, data){
+				if(state[property] === value && !handler.spent){
+					handler.spent = true;
+					ret.off("*", handler);
+					ret.dispatch(type, data);
+				}
+			});
+		},
+		
+		after: function(strType, trigger, fnReducer) {// like on(), but removes itself once the trigger has occurred
 			if(typeof trigger === "function") return ret.on(strType, function wait(state, data) {
 				if(trigger(state, data)) {
 					ret.off(strType, wait);
@@ -145,7 +156,7 @@ function CIA(reductions, state, pool) {
 			return ret.once(trigger, fnReducer);
 		},
 
-		before: function(strType, trigger, fnReducer) {
+		before: function(strType, trigger, fnReducer) { // like on(), but won't execute unless the trigger has occurred
 
 			if(typeof trigger === "function") return ret.on(strType, function wait(state, data) {
 				if(trigger(state, data)) {
@@ -165,7 +176,7 @@ function CIA(reductions, state, pool) {
 			});
 		},
 
-		push: function(strEvent, objCIA) {
+		push: function(strEvent, objCIA) { // dispatch an event ON another instance when it happens locally
 			function pusher(state, e) {
 				objCIA.dispatch(strEvent, e);
 			}
@@ -173,7 +184,7 @@ function CIA(reductions, state, pool) {
 			return ret.off.bind(ret, strEvent, pusher);
 		},
 
-		pull: function(strEvent, objCIA) {
+		pull: function(strEvent, objCIA) { // dispatch an event FROM another instance when it happens remotely
 			function puller(state, e) {
 				ret.dispatch(strEvent, e);
 			}
@@ -181,13 +192,13 @@ function CIA(reductions, state, pool) {
 			return objCIA.off.bind(objCIA, strEvent, puller);
 		},
 
-		subscribe: function(fnHandler, matcher) {
+		subscribe: function(fnHandler, matcher) { // add handlers that execute after state changes
 			pool.push([fnHandler, matcher]);
 			ret.dispatch("_SUBSCRIBE_", [fnHandler, matcher]);
 			return this.unsubscribe.bind(this, fnHandler);
 		},
 
-		unsubscribe: function(fnHandler) {
+		unsubscribe: function(fnHandler) { // removes handlers that execute after state changes
 			pool = pool.filter(function(fn) {
 				return fn[0] !== fnHandler;
 			});
@@ -292,4 +303,4 @@ function dupe(o){return CIA._freeze(assign({}, o));}
  // end packaging:  
   return CIA;
 
-}, this));
+}));
