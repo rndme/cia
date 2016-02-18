@@ -5,7 +5,7 @@
 Ever notice how the redux API looks like an EventEmitter? Me too, and I also noticed it doesn't have very many features. I wrote CIA to provide more features while preserving the basic concept.
 
 ## Setup:
-`npm install cia` or `bower install cia`
+`npm install cia` - _or_ - `bower install cia`
 
 ## Usage:
 `cia({methods}, {state} || {}, [handlers] || [] )`  <br />
