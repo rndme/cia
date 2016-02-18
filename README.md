@@ -38,8 +38,8 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * Give more than one handler when subscribing to an event ex:`.on("ADD", [fnValidate, fnDraw])`
 * Reducer definition object can have an array of many reducers under one type property name.
 * Reduce on given event type(s) only the next time they happen with `.once(event, reducer)`
-* Reduce on a dependent event type only after another type with `.after(needyEvent, strWaitEvent, reducer)`
-* Reduce on an event only before another type has fired with `.before(event, strWaitEvent, reducer)`
+* Reduce on a dependent event only _after_ another type w/ `.after(needyEvent, strWaitEvent, reducer)`
+* Reduce on an event only before another type has fired w/ `.before(event, strWaitEvent, reducer)`
 * `before()` and `after()` also take function conditionals for _waiting_ instead of a string type name
 * Context-free reducer invocation means you can bind `this` in your reducers without drawbacks.
 * `.now()` is just like `.on()` except that it dispatches immediately after subscribing  
@@ -49,7 +49,8 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * `dispatch()`ing a RegExp as a type triggers any matching reducer type(s)
 * Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
 * Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
-* Non-strings: dispatch `reducers.KEY`or `instance.$KEY` instead of `"KEY"` for validity and IDE happiness
+* Non-strings: dispatch `reducers.KEY`or `.types.KEY` instead of `"KEY"` for validity and IDE happiness
+* Action Creators: types can be invoked as methods using `.actions.KEY(data)`, call/apply set `this`
 * Over-ride un-bound conexts on `.dispatch()` with a third argument; the `this` value for the reducers
 
 
