@@ -33,7 +33,6 @@ function CIA(reductions, state, pool) {
 		flags = {},
 		rxInternal = /^_[A-Z]+_$/,
 		ret = {
-			returnValue: true,
 			history: [],
 			types: {},
 			undo: function(n) {
@@ -184,15 +183,14 @@ function CIA(reductions, state, pool) {
 			},
 
 			subscribe: function(fnHandler, matcher) {
-				pool.push(fnHandler);
-				fnHandler._matcher = matcher;
+				pool.push([fnHandler, matcher]);
 				ret.dispatch("_SUBSCRIBE_", [fnHandler, matcher]);
 				return this.unsubscribe.bind(this, fnHandler);
 			},
 
 			unsubscribe: function(fnHandler) {
 				pool = pool.filter(function(fn) {
-					return fn !== fnHandler;
+					return fn[0] !== fnHandler;
 				});
 				ret.dispatch("_UNSUBSCRIBE_", [fnHandler]);
 				return this;
@@ -234,11 +232,8 @@ function CIA(reductions, state, pool) {
 					} //end if throw on errors?
 
 					forEach(pool, function(fn) {
-						if(fn._matcher) {
-							if(fn._matcher.call && !fn._matcher(strType)) return;
-							if(strType.search(fn._matcher) === -1) return;
-						}
-						fn(state);
+						if(fn[1] && ((fn[1].call && !fn[1](strType)) || (strType.search(fn[1]) === -1) )) return;
+						fn[0].call(ret, state);
 					});
 
 
