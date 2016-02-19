@@ -222,7 +222,13 @@ function CIA(reductions, state, pool) {
 		},
 
 		dispatch: function(strType, data, context) { // allows reducer return values to be fed to handlers via this:
-
+	
+			if(!strType) throw new TypeError("dispatch() requires an event type, event object, array of types, or RegExp to match types with");
+		
+			if(!data && typeof strType==="object" && strType.type){ // make compat with redux event objects
+				data=strType;
+				strType=strType.type;				
+			}
 			if(strType.constructor === RegExp) strType = Object.keys(reductions).filter(/./.test, strType).join(",");
 			if(Array.isArray(strType) && arr(strType)[0] == strType[0]) strType = strType.join(",");
 			if(typeof strType != "string") for(var k in oDef) if(oDef[k] === strType) {
