@@ -248,7 +248,7 @@ function CIA(reductions, state, pool) {
 
 				if("*" in reductions) heap = heap.concat(reductions['*']);
 
-				if(!isInternal) ret.history.push([strType, data]);
+				if(!isInternal && !ret._blnForget) ret.history.push([strType, data]);
 
 				if(ret._blnErrorThrowing) {
 					forEach(heap, function(fn) {
@@ -311,6 +311,7 @@ CIA._blnPublishState= false; 	// add a state property to instance to allow outsi
 CIA._blnPublishReducers= false;	// add a reducer property to the instance to allow customization
 CIA._blnStrictReducers= false;	// dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
 CIA._blnErrorThrowing= false;	//  throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal
+CIA._blnForget= false;	//  prevents keeping dispatched actions in .history. prevents .after()'s firing on adding capability
 CIA._blnDeferSubscriptions= false;// debounce state-change callbacks to reduce CPU. note: only last event of cluster will be passed
 CIA._blnDeferPeriod = 15 ;	// w/_blnDeferSubscriptions, # of ms to wait for activity to cease before firing a state-change
 				
@@ -319,6 +320,12 @@ function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k]
 function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
 function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
 function dupe(o){return CIA._freeze(assign({}, o));}
+
+CIA.utils={
+	assign: assign,
+	dupe: dupe,
+	each: forEach	
+};
 
  // end packaging:  
   return CIA;
