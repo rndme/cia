@@ -45,6 +45,7 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
  
 
 ### Dispatching Actions:
+* Redux-style actions work too: `.dispatch({type:"ADD", value:4})` instead of `.dispatch("ADD", 4)`
 * `dispatch()`ing a RegExp as a type triggers any matching reducer type(s)
 * Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
 * Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
@@ -56,7 +57,6 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 ## Options
 Options are set globally, and percolate to an instance upon instantiation. You can modify the options on the instance for more localized control. The publish options affect setup, and thus can only be applied globally before instantiation; you can set them true, create an instance, and set them false after that to instantiate unique-options instances.
 
-
 Globally, these are set as `CIA._optionName`, and on the instance as `_optionName`
 
 `._freeze= Object.freeze;`	used to freeze state, change to just "Object" for mutable state, or a deep freezer. <br />
@@ -64,6 +64,10 @@ Globally, these are set as `CIA._optionName`, and on the instance as `_optionNam
 `._blnPublishReducers`	if true, add a reducer property to the instance to allow customization <br />
 `._blnStrictReducers`	if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal <br />
 `._blnErrorThrowing`	if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal <br />
+`._blnForget`		if true, don't keep dispatched actions in .history. Prevents .after()'s firing on adding capability
+`._blnDeferSubscriptions`	if true, debounce state-change callbacks. note: only last event of cluster will be passed
+`._blnDeferPeriod= 15`		w/_blnDeferSubscriptions, ms to wait for activity to cease before firing a state-change
+
 
 
 ## Methods
