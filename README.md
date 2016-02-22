@@ -28,6 +28,7 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 * Push certain events to another instance with `.push(events, instance)`
 * Pull certain events from another instance with `.pull(events, instance)`
 * Mark _subscription_ for certain events, or a conditional function `.subscribe(fn, strName(s)/fnBoolean)`
+* `.watch(property, type)` dispatches the type when `state.property` changes. use sparingly, if at all.
 
 
 ### Binding Reducers:
