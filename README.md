@@ -19,7 +19,7 @@ I wrote CIA to provide more Event-Emitter features while preserving the basic st
 * Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD", 4)`
 * Known reducer types can be called methodically: `.dispatch("ADD", 4)` simplifies to `.actions.ADD(4)`
 * Returning state in a reducer is optional; defaults to existing state
-* States need not immutable; `.getState()` returns a frozen copy and only reducers can mutate the state
+* States need not be immutable: `.getState()` returns a copy and only reducers can mutate the state
 * Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
 * `.subscribe(fn)` state-changed callbacks for rendering, backup, etc...
 * Can add reducers and state-change callbacks at runtime
