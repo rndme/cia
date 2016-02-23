@@ -2,7 +2,9 @@
 ## Centralized Inner Authority
 
 ### A redux-like central dispatcher providing a single source of truth.
-Ever notice how the redux API looks like an EventEmitter? Me too, and I also noticed it doesn't have very many features. I wrote CIA to provide more features while preserving the basic concept.
+Ever notice how the [redux store API](http://redux.js.org/docs/api/Store.html) looks like an EventEmitter? Me too, and I also noticed it doesn't have very many features, which made me sad :(
+
+I wrote CIA to provide more Event-Emitter features while preserving the basic state-manager concept.
 
 ## Setup:
 `npm install cia` - _or_ - `bower install cia`
@@ -13,11 +15,14 @@ Ever notice how the redux API looks like an EventEmitter? Me too, and I also not
 
 
 ## Alterations from redux:
-* Accepts opbject of methods instead of hard-coded `switch(action.type)` statements
-* Returning state in a reducer is optional; defaults to existing state
+* Accepts an object of methods instead of hard-coded `switch(action.type)` statements
 * Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD", 4)`
+* Known reducer types can be called methodically: `.dispatch("ADD", 4)` simplifies to `.actions.ADD(4)`
+* Returning state in a reducer is optional; defaults to existing state
+* States need not immutable; `.getState()` returns a frozen copy and only reducers can mutate the state
 * Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
 * `.subscribe(fn)` state-changed callbacks for rendering, backup, etc...
+* Can add reducers and state-change callbacks at runtime
 
 
 ## Additional Features:
@@ -111,7 +116,12 @@ These events fire without explicit `dispatch()` calls to reflect the lifecyle an
 
 
 
-## Example
+## Examples
+
+### View a [TodoMVC demo](http://danml.com/cia/todo/).
+
+### Simplistic Example:
+
 ```html
 <html>
   <main id=main></main>
