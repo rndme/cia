@@ -22,7 +22,7 @@ I wrote CIA to provide more Event-Emitter features while preserving the basic st
 * States need not be immutable: `.getState()` returns a copy and only reducers can mutate the state
 * Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
 * `.subscribe(fn)` state-changed callbacks for rendering, backup, etc...
-* Can add reducers and state-change callbacks at runtime
+* Can add/remove individual reducers and state-change callbacks at runtime
 
 
 ## Additional Features:
