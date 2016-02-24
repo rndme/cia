@@ -15,11 +15,11 @@ I wrote CIA to provide more Event-Emitter features while preserving the basic st
 
 
 ## Alterations from redux:
+* States need not be immutable: `.getState()` returns a copy and only reducers can mutate the state
 * Accepts an object of methods instead of hard-coded `switch(action.type)` statements
 * Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD", 4)`
 * Known reducer types can be called methodically: `.dispatch("ADD", 4)` simplifies to `.actions.ADD(4)`
 * Returning state in a reducer is optional; defaults to existing state
-* States need not be immutable: `.getState()` returns a copy and only reducers can mutate the state
 * Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
 * `.subscribe(fn)` state-changed callbacks for rendering, backup, etc...
 * Can add/remove individual reducers and state-change callbacks at runtime
@@ -113,6 +113,10 @@ These events fire without explicit `dispatch()` calls to reflect the lifecyle an
 
 
 
+## State Mutability
+While an immutable state address many concerns of complex data flow, implementing it (at least currently) raises its own concerns about performance, tooling, and readability/familiarity. When CIA's state is fetched by non-reducers,a shallow-frozen copy via `Object.assign({},state)`  and  `Object.freeze()`. Since only reducers can modify state, all modifications happen in a centralized spot instead of sprinkled throughout an application, which curtails the need for strictly locking down the state object to prevent consumer modification. Data consumers can still modify their copy of the state, but it won't change the actual state, which makes CIA authoritative.
+
+Note that you can easily modify this behavior by setting CIA._freeze to function that will deep-freeze or coerce the returned state into an immutableJS data structure. The `Object.freeze` default is mainly to assist development by throwing in strict mode when attempting to alter the state outside of reducers. You can also simply follow immutable conventions like returning a new state after each change via a new literal + spread operators. Just because CIA doesn't demand immutability doesn't mean the developer cannot.
 
 
 
