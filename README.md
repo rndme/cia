@@ -177,3 +177,52 @@ which  shows:
 	]
 ]
 ```
+
+
+
+
+## Real-World Example
+
+
+[From a real-world SO question](http://stackoverflow.com/questions/35592078/cleaner-shorter-way-to-mutate-state-in-redux)
+#### redux code
+```
+const initialState = {
+    notificationBar: {
+        open: false,
+    },
+};
+
+export default function (state = initialState, action) {
+  switch (action.type) {
+    case actions.LAYOUT_NOTIFICATIONBAR_OPEN:
+      	return {
+    		...state,
+    		notificationBar: {
+        		...state.notificationBar,
+        		open: true,
+    		},
+		};
+    default:
+      return state;
+  }
+}
+```
+
+#### becomes CIA code
+```
+export default CIA({
+	LAYOUT_NOTIFICATIONBAR_OPEN: 
+		state=> state.notificationBar.open = true
+  },{
+	notificationBar: {
+		open: false,
+	}
+});
+```
+Allowing mutating state _greatly_ simplified the reducers. <br />
+Since every piece of code that READS the state via `.getState()` gets a clone, consumers cannot damage/set/alter the state in CIA, which greatly reduces the benefits of a fully-immutable data flow, and saves the complications that result from immutable nesting.
+
+The CIA version can also now use `.actions.LAYOUT_NOTIFICATIONBAR_OPEN()` to dispatch instead of passing and `switch`ing a string.
+
+
