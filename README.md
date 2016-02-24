@@ -223,6 +223,6 @@ export default CIA({
 Allowing mutating state _greatly_ simplified the reducers. <br />
 Since every piece of code that READS the state via `.getState()` gets a clone, consumers cannot damage/set/alter the state in CIA, which greatly reduces the benefits of a fully-immutable data flow, and saves the complications that result from immutable nesting.
 
-The CIA version can also now use `.actions.LAYOUT_NOTIFICATIONBAR_OPEN()` to dispatch instead of passing and `switch`ing a string.
+The CIA version allows `.actions.LAYOUT_NOTIFICATIONBAR_OPEN()` to dispatch instead of calling `.dispatch()` passing a mis-spellable string.
 
 
