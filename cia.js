@@ -30,8 +30,9 @@ function CIA(reductions, state, objOptions) {
 		
 		undo: function(n) { // restore initial state and re-fire events 0 - (last - n)
 			state = JSON.parse(JSON.stringify(orig));
-			var r = ret.history.slice(0, - (n || 1));
+			var r = ret.history.slice(0, - (+n || 1));
 			ret.history.length = 0;
+			if(!r.length) return ret.dispatch("_INIT_");
 			forEach(r, function(e) {
 				ret.dispatch(e[0], e[1]);
 			});
