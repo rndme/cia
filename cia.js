@@ -257,7 +257,7 @@ function CIA(reductions, state, objOptions) {
 				} else { // catch errors:
 					forEach(heap, function(fn) {
 						try {
-							var rez = (context ? fn.call(context, state, data) : fn(state, data)) || state;
+							var rez = (context ? fn.call(context, state, data) : fn(state, data));
 							if( rez!=fn.UndeF1neD && !ret._blnPureMutations) state = rez;
 						} catch(err) {
 							ret.dispatch("_ERROR_", [err, strType, data]);
