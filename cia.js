@@ -27,6 +27,13 @@ function CIA(reductions, state, objOptions) {
 	rxInternal = /^_[A-Z]+_$/,
 	ret = {
 		history: [],
+
+		forget: function() { // clear history and set current as initial state
+			orig = JSON.parse(JSON.stringify(state));
+			ret.history.length = 0;
+			ret.dispatch.call(ret, "_INIT_", []);
+			return true;
+		},
 		
 		undo: function(n) { // restore initial state and re-fire events 0 - (last - n)
 			state = JSON.parse(JSON.stringify(orig));
@@ -287,7 +294,7 @@ function CIA(reductions, state, objOptions) {
 			return this;
 		},
 
-		reset: function() { // empties the state change history, restores the state to initial, and dispatches _INIT_
+		revert: function() { // empties the state change history, restores the state to initial, and dispatches _INIT_
 			ret.history.length = 0;
 			state = orig;
 			ret.dispatch.call(ret, "_INIT_", []);
