@@ -252,14 +252,14 @@ function CIA(reductions, state, pool) {
 
 				if(ret._blnErrorThrowing) {
 					forEach(heap, function(fn) {
-						var ret = (context ? fn.call(context, state, data) : fn(state, data));
-						if( ret!=fn._UndeF1neD && !ret._blnPureMutations) state = ret;
+						var rez = (context ? fn.call(context, state, data) : fn(state, data));
+						if( rez!=fn.UndeF1neD && !ret._blnPureMutations) state = rez;
 					});
 				} else { // catch errors:
 					forEach(heap, function(fn) {
 						try {
-							var ret = (context ? fn.call(context, state, data) : fn(state, data)) || state;
-							if( ret!=fn._UndeF1neD && !ret._blnPureMutations) state = ret;
+							var rez = (context ? fn.call(context, state, data) : fn(state, data)) || state;
+							if( rez!=fn.UndeF1neD && !ret._blnPureMutations) state = rez;
 						} catch(err) {
 							ret.dispatch("_ERROR_", [err, strType, data]);
 						}
