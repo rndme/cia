@@ -27,13 +27,14 @@ function CIA(reductions, state, objOptions) {
 	rxInternal = /^_[A-Z]+_$/,
 	ret = {
 		history: [],
+		
 		undo: function(n) { // restore initial state and re-fire events 0 - (last - n)
 			state = JSON.parse(JSON.stringify(orig));
-			var r = this.history.slice(0, - (n || 1));
-			this.history.length = 0;
-			r.forEach(function(e) {
-				this.dispatch(e[0], e[1]);
-			}, this);
+			var r = ret.history.slice(0, - (n || 1));
+			ret.history.length = 0;
+			forEach(r, function(e) {
+				ret.dispatch(e[0], e[1]);
+			});
 		},
 
 		getState: function() { // returns a representation of the internal state
