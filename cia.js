@@ -8,7 +8,6 @@ function CIA(reductions, state, objOptions) {
 	objOptions = objOptions || {};
 	
 	if(typeof reductions != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
-	if(typeof state != "object") throw new TypeError("State Object cannot be a non-Object");
 
 	var pool = [],
 	types = {types:{}, actions: {}}, 
