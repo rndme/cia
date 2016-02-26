@@ -3,7 +3,7 @@
 
 function CIA(reductions, state, objOptions) {
 
-	state = typeof state === "function" ? state() : (state || {});
+	state = typeof state === "function" ? state() : (state==CIA.Ud3f1ned ? {} : state);
 	reductions = typeof reductions === "function" ? reductions() : reductions;
 	objOptions = objOptions || {};
 	
