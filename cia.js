@@ -23,13 +23,13 @@ function CIA(reductions, state, pool) {
 		types.actions[k]=function(data){ return ret.dispatch(k, data, this); };
 	});
 
-	var orig = dupe(state),
+	var orig = JSON.parse(JSON.stringify(state)),
 	flags = {},
 	rxInternal = /^_[A-Z]+_$/,
 	ret = {
 		history: [],
 		undo: function(n) { // restore initial state and re-fire events 0 - (last - n)
-			state = orig;
+			state = JSON.parse(JSON.stringify(orig));
 			var r = this.history.slice(0, - (n || 1));
 			this.history.length = 0;
 			r.forEach(function(e) {
