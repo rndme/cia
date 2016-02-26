@@ -1,17 +1,17 @@
 // cia.js  by dandavis [CCBY4]
 (function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.CIA=a()}(function(){
 
-function CIA(reductions, state, pool) {
+function CIA(reductions, state, objOptions) {
 
 	state = typeof state === "function" ? state() : (state || {});
 	reductions = typeof reductions === "function" ? reductions() : reductions;
-
+	objOptions = objOptions || {};
+	
 	if(typeof reductions != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
 	if(typeof state != "object") throw new TypeError("State Object cannot be a non-Object");
 
-	pool = Array.isArray(pool) ? pool : (typeof pool === "function" ? pool() : []);
-
-	var types = {types:{}, actions: {}}, 
+	var pool = [],
+	types = {types:{}, actions: {}}, 
 	oDef = reductions;
 	reductions = assign({}, reductions); //dupe reductions
 
@@ -130,7 +130,7 @@ function CIA(reductions, state, pool) {
 			return this;
 		},
 
-		when: function(property, value, type, data){
+		when: function(property, value, type, data){ // needs state to be an object
 			// given a property and value/array of values, dispatch a given event with given data
 			return ret.on("*", function handler(state, data){
 				if(  (  Array.isArray(value) ? 
@@ -144,7 +144,7 @@ function CIA(reductions, state, pool) {
 			});
 		},
 		
-		watch: function(property, type){
+		watch: function(property, type){ // needs state to be an object
 			// given a property , dispatch a given event when the property value changes
 			var value = state[property];
 			return ret.on("*", function handler(state, data){
@@ -295,7 +295,7 @@ function CIA(reductions, state, pool) {
 	};
 
 	forEach(Object.keys(CIA), function(k) {
-		ret[k] = CIA[k];
+		ret[k] = (k in objOptions) ? objOptions[k] : CIA[k];
 	}); // "inherit" options to instance
 
 	if(ret._blnPublishState) ret.state = state; // if publish state?
@@ -322,7 +322,7 @@ CIA._blnDeferPeriod = 15 ;	// w/_blnDeferSubscriptions, # of ms to wait for acti
 function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k] = x[k]; return o; }
 function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
 function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
-function dupe(o){return CIA._freeze(assign({}, o));}
+function dupe(o){return (o && typeof o==="object") ? CIA._freeze(assign({}, o)) : o;}
 
 CIA.utils={
 	assign: assign,
