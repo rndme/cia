@@ -52,7 +52,6 @@ function CIA(reductions, state, objOptions) {
 		flag: function(strType, value) { // fires knowns and news when subscribed, good for ready()
 			forEach(arr(strType), function(strType) {
 				flags[strType] = value;
-				ret.dispatch(strType, value);
 			});
 		},
 
