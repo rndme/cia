@@ -141,7 +141,7 @@ Note that you can easily modify this behavior by setting CIA._freeze to function
 
 ### View a [TodoMVC demo](http://danml.com/cia/todo/).
 
-### Simplistic Example (inspired by [the redux demo](https://github.com/reactjs/redux/blob/master/examples/counter-vanilla/index.html) ):
+### Simplistic Example (inspired by [the redux demo](https://github.com/reactjs/redux/blob/master/examples/counter-vanilla/index.html). [live demo](http://pagedemos.com/5je4v7cnejdh/).)
 
 ```html
 <html>
