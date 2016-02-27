@@ -85,7 +85,6 @@ function CIA(reductions, state, objOptions) {
 				forEach(fnReducer, function(fnReducer) {
 					var r = reductions[strType] || (reductions[strType] = []);
 					r.push(fnReducer);
-					ret["$" + strType] = strType;
 					ret.actions[strType]= function(data){ return ret.dispatch(strType, data, this); };
 					ret.types[strType]= strType;
 					ret.dispatch("_ON_", [strType, fnReducer]);
@@ -112,17 +111,13 @@ function CIA(reductions, state, objOptions) {
 					var r = reductions[strType];
 					if(!r) return false;
 					ret.dispatch("_OFF_", [strType, fnReducer]);
-					if(fnReducer === "*") {
-						delete ret["$" + strType];
-						return delete reductions[strType];
-					}
-		
+					if(fnReducer === "*") r= [fnReducer];
+
 					var index = r.indexOf(fnReducer);
 					if(index === -1) return false;
 					r.splice(index, 1);
 		
 					if(!r.length) {
-						delete ret["$" + strType];
 						delete ret.actions[strType];
 						delete reductions[strType];
 						delete ret.types[strType];
