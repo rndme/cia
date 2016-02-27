@@ -43,6 +43,7 @@ function CIA(reductions, state, objOptions) {
 			forEach(r, function(e) {
 				ret.dispatch(e[0], e[1]);
 			});
+			return this;
 		},
 
 		getState: function() { // returns a representation of the internal state
@@ -54,12 +55,14 @@ function CIA(reductions, state, objOptions) {
 				flags[strType] = value;
 				ret.dispatch(strType, value);
 			});
+			return this;
 		},
 
 		unflag: function(strType) { // un-set an auto-dispatch event
 			forEach(arr(strType), function(strType) {
 				delete flags[strType];
 			});
+			return this;
 		},
 
 		now:  function(strType, fnReducer, context) { // like on, but dispatches the event upon adding
