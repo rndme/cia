@@ -87,9 +87,9 @@ Globally, these are set as `CIA._optionName`, on the instance as `_optionName`, 
 `._blnPublishReducers`	if true, add a _reducers_ property to the instance to allow customization. The reducers will be on an object of arrays, keyed by event type. Any changes made are live. <br />
 `._blnStrictReducers`	if true, dispatch()ing missing reducer types will throw instead of firing a _MISSING_ internal <br />
 `._blnErrorThrowing`	if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal <br />
-`._blnForget`		if true, don't keep dispatched actions in .history. Prevents .after()'s firing on adding capability, but can reduce ram usage for long-running applications. use `.forget()` at any time to achieve the same once.
-`._blnDeferSubscriptions`	if true, debounce state-change callbacks. note: only last state-change event of a cluster will be passed, which is typically ok since callbacks should not care about what just happens except to optimize.
-`._blnDeferPeriod= 15`		w/_blnDeferSubscriptions, ms to wait for activity to cease before firing a state-change. this can help reduce "hammering" when dispatching an action upon every _keypress_ or _scroll_ event
+`._blnForget`		if true, don't keep dispatched actions in .history. Prevents .after()'s firing on adding capability, but can reduce ram usage for long-running applications. use `.forget()` at any time to achieve the same once. <br />
+`._blnDeferSubscriptions`	if true, debounce state-change callbacks. note: only last state-change event of a cluster will be passed, which is typically ok since callbacks should not care about what just happens except to optimize. <br />
+`._blnDeferPeriod= 15`		w/\_blnDeferSubscriptions, ms to wait for activity to cease before firing a state-change. Reduces "hammering" when dispatching an action upon every _keypress_ or _scroll_ event.
 
 
 
