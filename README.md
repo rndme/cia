@@ -1,10 +1,24 @@
 # CIA
-## Centralized Inner Authority
+## Centralized Inner Authority - Nothing but the truth
 
-### A redux-like central dispatcher providing a single source of truth.
-Ever notice how the [redux store API](http://redux.js.org/docs/api/Store.html) looks like an EventEmitter? Me too, and I also noticed it doesn't have very many features, which made me sad :(
+## Main Objectives
+It's not just another redux re-hash, though it could be...
 
-I wrote CIA to provide more Event-Emitter features while preserving the basic state-manager concept.
+### State only modifiable by actions
+Only actions can directly modify or replace the state, all others get a _copy_ of it via `.getState()`. Having only a copy, even poorly written code can safely consume the state without fear of pollution or cross-talk. This applies even to non-immutable states, which can often be simpler to implement/integrate than immutable structures. CIA makes both options simple and reliable. 
+
+### State changes from dynamic action collections
+All state changes happen from one place (the store), from one (or more) discrete named methods. These named methods can be known at author-time, assisting IDEs and code-completion more than string constants. Defining an action type automatically creates a method and registers that method to respond to specific actions. The actions can be `.dispatch('SAVE')`ed or called directly (`.actions.SAVE()`).
+
+
+### undo() capability w/o state snapshots
+One can replay a chess game by writing down the position of each piece at every turn, but piece-move _notations_ better for the wrist. Likewise, CIA makes one snapshot of the state at init, then accumulates any actions and params applied from there. Only action names and options are stored, not whole state, which scales well to very large models of state.
+
+Re-starting at the beginning and re-applying every action to a given point can re-create any state achieved since init. Following the convention that actions cannot dispatch other actions, even slow async jobs that eventually dispatched actions will instantly re-apply their results, so "doing it all over" is not painful.
+
+
+
+
 
 ## Setup:
 `npm install cia` - _or_ - `bower install cia`
@@ -19,7 +33,7 @@ I wrote CIA to provide more Event-Emitter features while preserving the basic st
 * Accepts an object of methods instead of hard-coded `switch(action.type)` statements
 * Action type is a string instead of a property, action data is stand-alone ex:`.dispatch("ADD", 4)`
 * Known reducer types can be called methodically: `.dispatch("ADD", 4)` simplifies to `.actions.ADD(4)`
-* Returning state in a reducer is optional; defaults to existing state
+* Returning state in a reducer is optional; defaults to existing state if returning `undefined`
 * Subscribe actions to typed events w/ `.on(TYPE, fn)` and  `.dispatch("TYPE")` to fire action(s)
 * `.subscribe(fn)` state-changed callbacks for rendering, backup, etc...
 * Can add/remove individual reducers and state-change callbacks at runtime
@@ -34,6 +48,7 @@ I wrote CIA to provide more Event-Emitter features while preserving the basic st
 * Pull certain events from another instance with `.pull(events, instance)`
 * Mark _subscription_ for certain events, or a conditional function `.subscribe(fn, strName(s)/fnBoolean)`
 * `.watch(property, type)` dispatches the type when `state.property` changes. use sparingly, if at all.
+* Configure specific options at creation time with a thrid argument to CIA, `objOptions` of options
 
 
 ### Binding Reducers:
