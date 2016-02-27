@@ -84,6 +84,8 @@ function CIA(reductions, state, objOptions) {
 					var r = reductions[strType] || (reductions[strType] = []);
 					r.push(fnReducer);
 					ret["$" + strType] = strType;
+					ret.actions[strType]= function(data){ return ret.dispatch(strType, data, this); };
+					ret.types[strType]= strType;
 					ret.dispatch("_ON_", [strType, fnReducer]);
 					if(flags[strType] != null) ret.dispatch(strType, flags[strType]);
 				});
@@ -100,23 +102,34 @@ function CIA(reductions, state, objOptions) {
 				return this;
 			}
 
-			var r = reductions[strType];
-			if(!r) return false;
-			ret.dispatch("_OFF_", [strType, fnReducer]);
-			if(fnReducer === "*") {
-				delete ret["$" + strType];
-				return delete reductions[strType];
-			}
+			if(!Array.isArray(fnReducer)) fnReducer = [fnReducer];
 
-			var index = r.indexOf(fnReducer);
-			if(index === -1) return false;
-			r.splice(index, 1);
+			forEach(arr(strType), function(strType) {
+				forEach(fnReducer, function(fnReducer) {
 
-			if(!r.length) {
-				delete ret["$" + strType];
-				delete reductions[strType];
-			}
-			return true;
+					var r = reductions[strType];
+					if(!r) return false;
+					ret.dispatch("_OFF_", [strType, fnReducer]);
+					if(fnReducer === "*") {
+						delete ret["$" + strType];
+						return delete reductions[strType];
+					}
+		
+					var index = r.indexOf(fnReducer);
+					if(index === -1) return false;
+					r.splice(index, 1);
+		
+					if(!r.length) {
+						delete ret["$" + strType];
+						delete ret.actions[strType];
+						delete reductions[strType];
+						delete ret.types[strType];
+					}
+				});
+			});
+
+
+			return this;
 		},
 
 		once: function(strType, fnReducer) { //like on(), but removes after the first time it fires.
