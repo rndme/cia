@@ -8,15 +8,14 @@ It's not just another redux re-hash, though it could be...
 Only actions can directly modify or replace the state, all others get a _copy_ of it via `.getState()`. Having only a copy, even poorly written code can safely consume the state without fear of pollution or cross-talk. This applies even to non-immutable states, which can often be simpler to implement/integrate than immutable structures. CIA makes both options simple and reliable. 
 
 ### State changes from dynamic action collections
-All state changes happen from one place (the store), from one (or more) discrete named methods. These named methods can be known at author-time, assisting IDEs and code-completion more than string constants. Defining an action type automatically creates a method and registers that method to respond to specific actions. The actions can be `.dispatch('SAVE')`ed or called directly (`.actions.SAVE()`).
+All state changes happen from one place (the store), from one (or more) discrete named methods, forming single-concern self-contained interchangable parts. Action methods are known at author-time, assisting IDE features and code-completion. Defining an action type automatically creates a corresponding method. Actions can be `.dispatch()`ed or called methodically (`.actions.SAVE()`).
 
 
 ### undo() capability w/o state snapshots
 One can replay a chess game by writing down the position of each piece at every turn, but piece-move _notations_ better for the wrist. Likewise, CIA makes one snapshot of the state at init, then accumulates any actions and params applied from there. Only action names and options are stored, not whole state, which scales well to very large models of state.
 
+
 Re-starting at the beginning and re-applying every action to a given point can re-create any state achieved since init. Following the convention that actions cannot dispatch other actions, even slow async jobs that eventually dispatched actions will instantly re-apply their results, so "doing it all over" is not painful.
-
-
 
 
 
@@ -66,7 +65,8 @@ Re-starting at the beginning and re-applying every action to a given point can r
  
 
 ### Dispatching Actions:
-* Redux-style actions work too: `.dispatch({type:"ADD", value:4})` instead of `.dispatch("ADD", 4)`
+* dispatch a string name; no `{type: ""}` object needed because the 2nd argument is passed in whole.
+* Redux-style action objects work too: `.dispatch({type:"ADD", value:4})` instead of `.dispatch("ADD", 4)`
 * `dispatch()`ing a RegExp as a type triggers any matching reducer type(s)
 * Fire multiple events at once (ltr) from a single dispatch() call: `.dispatch("NEW,LOG,DRAW", uName)`
 * Set flags to fire future reducers immediately upon adding  `.flag(strType, value)`
@@ -78,16 +78,18 @@ Re-starting at the beginning and re-applying every action to a given point can r
 ## Options
 Options are set globally, and percolate to an instance upon instantiation. You can modify the options on the instance for more localized control. The publish options affect setup, and thus can only be applied globally before instantiation; you can set them true, create an instance, and set them false after that to instantiate unique-options instances.
 
-Globally, these are set as `CIA._optionName`, and on the instance as `_optionName`
+Globally, these are set as `CIA._optionName`, on the instance as `_optionName`, or as a 3rd argument to `CIA()`
 
 `._freeze= Object.freeze;`	used to freeze state, change to just "Object" for mutable state, or a deep freezer. <br />
-`._blnPublishState`	if true, add a state property to instance to allow outside mutations (not usually recommended) <br />
-`._blnPublishReducers`	if true, add a reducer property to the instance to allow customization <br />
-`._blnStrictReducers`	if true, dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal <br />
+`._blnPureMutations`	if true, ignore the return from reducers to allow simple one-line arrow functions to mod state. 
+	Presumably with this option you are using a mutable state, otherwise you won't be able to update. <br />
+`._blnPublishState`	if true, add a _state_ property to instance to allow outside mutations (not usually recommended). This can allow non-action access to state for extension, debugging, or integration. <br />
+`._blnPublishReducers`	if true, add a _reducers_ property to the instance to allow customization. The reducers will be on an object of arrays, keyed by event type. Any changes made are live. <br />
+`._blnStrictReducers`	if true, dispatch()ing missing reducer types will throw instead of firing a _MISSING_ internal <br />
 `._blnErrorThrowing`	if true, throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal <br />
-`._blnForget`		if true, don't keep dispatched actions in .history. Prevents .after()'s firing on adding capability
-`._blnDeferSubscriptions`	if true, debounce state-change callbacks. note: only last event of cluster will be passed
-`._blnDeferPeriod= 15`		w/_blnDeferSubscriptions, ms to wait for activity to cease before firing a state-change
+`._blnForget`		if true, don't keep dispatched actions in .history. Prevents .after()'s firing on adding capability, but can reduce ram usage for long-running applications. use `.forget()` at any time to achieve the same once.
+`._blnDeferSubscriptions`	if true, debounce state-change callbacks. note: only last state-change event of a cluster will be passed, which is typically ok since callbacks should not care about what just happens except to optimize.
+`._blnDeferPeriod= 15`		w/_blnDeferSubscriptions, ms to wait for activity to cease before firing a state-change. this can help reduce "hammering" when dispatching an action upon every _keypress_ or _scroll_ event
 
 
 
@@ -139,63 +141,45 @@ Note that you can easily modify this behavior by setting CIA._freeze to function
 
 ### View a [TodoMVC demo](http://danml.com/cia/todo/).
 
-### Simplistic Example:
+### Simplistic Example (inspired by [the redux demo](https://github.com/reactjs/redux/blob/master/examples/counter-vanilla/index.html) ):
 
 ```html
 <html>
-  <main id=main></main>
-  <script src="http://danml.com/js/cia.js"></script>
+  <head>
+    <title>CIA basic example</title>
+    <script src="http://danml.com/bundle/rndme.cia_.js"></script>
+  </head>
+  <body>
+    <div>
+      <p>
+        Clicked: <span id="value">0</span> times
+        <button id="btnInc">+</button>
+        <button id="btnDec">-</button>
+        <button id="btnOdd">Increment if odd</button>
+        <button id="btnAsync">Increment async</button>
+		<button id="btnUndo">Undo</button>
+      </p>
+    </div>
 <script>
+  var store=CIA({ // state-changing actions and the default state:
+  	INCREMENT: state=>state+1,
+	DECREMENT: state=>state-1,
+  }, 0 );
 
-var store = CIA({ // action reducers (state-adjusting pure functions)
-	ADD: function(state){
-	  return {count: state.count+1};
-	},
-	SET : function(state, e){
-		return {count: e};
-	},
-	_INIT_: console.log.bind(console, "booting") // optional internal event
-},{  // default application state:
-	count: 0
-});
+  // bind state changes to update view
+  store.subscribe(()=> value.innerHTML= store.getState());
 
-// subscribe() to render on each change event:
-store.subscribe(function render(state, blnForce) {
-	main.innerHTML="<pre>"+JSON.stringify([state, store.history], null, "\t");
-});	  
-
-// make some state changes:
-store.dispatch("ADD");  // state.count == 1
-store.dispatch("ADD");  // state.count == 2
-store.dispatch("SET", 12 );// state.count == 12
-store.dispatch("ADD");  // state.count == 13
-store.undo(1);  // state.count == 12
-
+  // bind ui controls:
+  btnInc.onclick= store.actions.INCREMENT;	  	
+  btnDec.onclick= store.actions.DECREMENT;	  
+  btnOdd.onclick= e=>(store.getState() % 2) && store.actions.INCREMENT();    
+  btnAsync.onclick= setTimeout.bind(this, store.actions.INCREMENT, 1000);
+  btnUndo.onclick= store.undo;
 </script>
+  </body>
 </html>
 ```
-which  shows:
-```js
-[
-	{
-		"count": 12
-	},
-	[
-		[
-			"ADD",
-			null
-		],
-		[
-			"ADD",
-			null
-		],
-		[
-			"SET",
-			12
-		]
-	]
-]
-```
+
 
 
 
