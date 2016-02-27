@@ -239,10 +239,6 @@ function CIA(reductions, state, objOptions) {
 			}
 			if(strType.constructor === RegExp) strType = Object.keys(reductions).filter(/./.test, strType).join(",");
 			if(Array.isArray(strType) && arr(strType)[0] == strType[0]) strType = strType.join(",");
-			if(typeof strType != "string") for(var k in oDef) if(oDef[k] === strType) {
-				strType = k;
-				break;
-			}
 
 			forEach(arr(strType), function(strType) {
 
