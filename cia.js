@@ -67,34 +67,34 @@ function CIA(reductions, state, objOptions) {
 			return this;
 		},
 
-		now:  function(strType, fnReducer, context) { // like on, but dispatches the event upon adding
-			ret.on(strType, fnReducer);
+		now:  function(strType, fnChanger, context) { // like on, but dispatches the event upon adding
+			ret.on(strType, fnChanger);
 			ret.dispatch(strType, context);
 			return this;
 		},
 
-		on: function(strType, fnReducer) { // adds reducer(s) for type(s)
+		on: function(strType, fnChanger) { // adds changer(s) for type(s)
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
 					ret.on(k, strType[k]);
 				});
 				return this;
 			}
-			if(!Array.isArray(fnReducer)) fnReducer = [fnReducer];
+			if(!Array.isArray(fnChanger)) fnChanger = [fnChanger];
 			forEach(arr(strType), function(strType) {
-				forEach(fnReducer, function(fnReducer) {
+				forEach(fnChanger, function(fnChanger) {
 					var r = reductions[strType] || (reductions[strType] = []);
-					r.push(fnReducer);
+					r.push(fnChanger);
 					ret.actions[strType]= function(data){ return ret.dispatch(strType, data, this); };
 					ret.types[strType]= strType;
-					ret.dispatch("_ON_", [strType, fnReducer]);
+					ret.dispatch("_ON_", [strType, fnChanger]);
 					if(flags[strType] != null) ret.dispatch(strType, flags[strType]);
 				});
 			});
 			return this;
 		},
 
-		off: function(strType, fnReducer) { // remove a reducer by type and function, or "*" for all
+		off: function(strType, fnChanger) { // remove a changer by type and function, or "*" for all
 
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
@@ -103,17 +103,17 @@ function CIA(reductions, state, objOptions) {
 				return this;
 			}
 
-			if(!Array.isArray(fnReducer)) fnReducer = [fnReducer];
+			if(!Array.isArray(fnChanger)) fnChanger = [fnChanger];
 
 			forEach(arr(strType), function(strType) {
-				forEach(fnReducer, function(fnReducer) {
+				forEach(fnChanger, function(fnChanger) {
 
 					var r = reductions[strType];
 					if(!r) return false;
-					ret.dispatch("_OFF_", [strType, fnReducer]);
-					if(fnReducer === "*") r= [fnReducer];
+					ret.dispatch("_OFF_", [strType, fnChanger]);
+					if(fnChanger === "*") r= [fnChanger];
 
-					var index = r.indexOf(fnReducer);
+					var index = r.indexOf(fnChanger);
 					if(index === -1) return false;
 					r.splice(index, 1);
 		
@@ -129,7 +129,7 @@ function CIA(reductions, state, objOptions) {
 			return this;
 		},
 
-		once: function(strType, fnReducer) { //like on(), but removes after the first time it fires.
+		once: function(strType, fnChanger) { //like on(), but removes after the first time it fires.
 
 			if(typeof strType === "object") {
 				forEach(Object.keys(strType), function(k) {
@@ -138,12 +138,12 @@ function CIA(reductions, state, objOptions) {
 				return this;
 			}
 
-			if(!Array.isArray(fnReducer)) fnReducer = [fnReducer];
+			if(!Array.isArray(fnChanger)) fnChanger = [fnChanger];
 
 			forEach(arr(strType), function(strType) {
-				forEach(fnReducer, function(fnReducer) {
+				forEach(fnChanger, function(fnChanger) {
 					ret.on(strType, function oncer(state, e) {
-						fnReducer(state, e);
+						fnChanger(state, e);
 						ret.off(strType, oncer);
 					});
 				});
@@ -177,28 +177,28 @@ function CIA(reductions, state, objOptions) {
 			});
 		},		
 		
-		after: function(strType, trigger, fnReducer) {// like on(), but removes itself once the trigger has occurred
+		after: function(strType, trigger, fnChanger) {// like on(), but removes itself once the trigger has occurred
 			if(typeof trigger === "function") return ret.on(strType, function wait(state, data) {
 				if(trigger(state, data)) {
 					ret.off(strType, wait);
-					ret.on(strType, fnReducer);
-					fnReducer.call(ret, state, data);
+					ret.on(strType, fnChanger);
+					fnChanger.call(ret, state, data);
 				}
 			});
 			var ok = ret.history.some(function(x) {
 				return x[0] === trigger;
 			});
-			if(ok) return ret.on(strType, fnReducer);
-			return ret.once(trigger, fnReducer);
+			if(ok) return ret.on(strType, fnChanger);
+			return ret.once(trigger, fnChanger);
 		},
 
-		before: function(strType, trigger, fnReducer) { // like on(), but won't execute unless the trigger has occurred
+		before: function(strType, trigger, fnChanger) { // like on(), but won't execute unless the trigger has occurred
 
 			if(typeof trigger === "function") return ret.on(strType, function wait(state, data) {
 				if(trigger(state, data)) {
 					ret.off(strType, wait);
 				} else {
-					fnReducer.call(ret, state, data);
+					fnChanger.call(ret, state, data);
 				}
 			});
 
@@ -206,9 +206,9 @@ function CIA(reductions, state, objOptions) {
 				return x[0] === trigger;
 			});
 			if(used) return ret;
-			ret.on(strType, fnReducer);
+			ret.on(strType, fnChanger);
 			return ret.once(trigger, function oncer() {
-				ret.off(strType, fnReducer);
+				ret.off(strType, fnChanger);
 			});
 		},
 
@@ -242,7 +242,7 @@ function CIA(reductions, state, objOptions) {
 			return this;
 		},
 
-		dispatch: function(strType, data, context) { // allows reducer return values to be fed to handlers via this:
+		dispatch: function(strType, data, context) { // allows changer return values to be fed to handlers via this:
 	
 			if(!strType) throw new TypeError("dispatch() requires an event type, event object, array of types, or RegExp to match types with");
 		
@@ -259,7 +259,7 @@ function CIA(reductions, state, objOptions) {
 					isInternal = rxInternal.test(strType);
 
 				if(!heap.length && !isInternal) {
-					if(ret._blnStrictReducers) throw new TypeError("Unknown reducer type dispatched: " + strType);
+					if(ret._blnStrictChangers) throw new TypeError("Unknown changer type dispatched: " + strType);
 					return ret.dispatch("_MISSING_", [strType, data]);
 				}
 
@@ -316,7 +316,7 @@ function CIA(reductions, state, objOptions) {
 	}); // "inherit" options to instance
 
 	if(ret._blnPublishState) ret.state = state; // if publish state?
-	if(ret._blnPublishReducers) ret.reducers = reducers; // if publish reducers?
+	if(ret._blnPublishChangers) ret.changers = changers; // if publish changers?
 
 	assign(ret, types);
 	ret.dispatch.call(ret, "_INIT_", []);
@@ -327,10 +327,10 @@ function CIA(reductions, state, objOptions) {
 // global config, available externally
 CIA._freeze= Object.freeze; 	// used to freeze state, change to just "Object" (or K) to allow mutable state properties.
 CIA._blnPublishState= false; 	// add a state property to instance to allow outside mutations (not usually recommended)
-CIA._blnPublishReducers= false;	// add a reducer property to the instance to allow customization
-CIA._blnStrictReducers= false;	// dispatch()ing missing reducer types will throw instead of fire a _MISSING_ internal
-CIA._blnErrorThrowing= false;	//  throw on errors instead of dispatch()ing reducer errors as an _ERROR_ type internal
-CIA._blnPureMutations= false;   // optimizes for mutating pure functions by igroning reducer returns
+CIA._blnPublishChangers= false;	// add a changer property to the instance to allow customization
+CIA._blnStrictChangers= false;	// dispatch()ing missing changer types will throw instead of fire a _MISSING_ internal
+CIA._blnErrorThrowing= false;	//  throw on errors instead of dispatch()ing changer errors as an _ERROR_ type internal
+CIA._blnPureMutations= false;   // optimizes for mutating pure functions by igroning changer returns
 CIA._blnForget= false;	//  prevents keeping dispatched actions in .history. prevents .after()'s firing on adding capability
 CIA._blnDeferSubscriptions= false;// debounce state-change callbacks to reduce CPU. note: only last event of cluster will be passed
 CIA._blnDeferPeriod = 15 ;	// w/_blnDeferSubscriptions, # of ms to wait for activity to cease before firing a state-change
