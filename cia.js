@@ -1,23 +1,23 @@
 // cia.js  by dandavis [CCBY4]
 (function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.CIA=a()}(function(){
 
-function CIA(reductions, state, objOptions) {
+function CIA(changers, state, objOptions) {
 
 	state = typeof state === "function" ? state() : (state==CIA.Ud3f1ned ? {} : state);
-	reductions = typeof reductions === "function" ? reductions() : reductions;
+	changers = typeof changers === "function" ? changers() : changers;
 	objOptions = objOptions || {};
 	
-	if(typeof reductions != "object") throw new TypeError("Reduction definitions Object cannot be a non-Object");
+	if(typeof changers != "object") throw new TypeError("changers definitions Object cannot be a non-Object");
 
 	var pool = [],
 	types = {types:{}, actions: {}}, 
-	oDef = reductions;
-	reductions = assign({}, reductions); //dupe reductions
+	oDef = changers;
+	changers = assign({}, changers); //dupe changers
 
 	// turn each prop into an array for later expansion:
-	forEach(Object.keys(reductions), function(k) {
-		var o = reductions[k];
-		if(!Array.isArray(o)) reductions[k] = [o];
+	forEach(Object.keys(changers), function(k) {
+		var o = changers[k];
+		if(!Array.isArray(o)) changers[k] = [o];
 		types.types[k]=k;
 		types.actions[k]=function(data){ return ret.dispatch(k, data, this); };
 	});
@@ -83,7 +83,7 @@ function CIA(reductions, state, objOptions) {
 			if(!Array.isArray(fnChanger)) fnChanger = [fnChanger];
 			forEach(arr(strType), function(strType) {
 				forEach(fnChanger, function(fnChanger) {
-					var r = reductions[strType] || (reductions[strType] = []);
+					var r = changers[strType] || (changers[strType] = []);
 					r.push(fnChanger);
 					ret.actions[strType]= function(data){ return ret.dispatch(strType, data, this); };
 					ret.types[strType]= strType;
@@ -108,7 +108,7 @@ function CIA(reductions, state, objOptions) {
 			forEach(arr(strType), function(strType) {
 				forEach(fnChanger, function(fnChanger) {
 
-					var r = reductions[strType];
+					var r = changers[strType];
 					if(!r) return false;
 					ret.dispatch("_OFF_", [strType, fnChanger]);
 					if(fnChanger === "*") r= [fnChanger];
@@ -119,7 +119,7 @@ function CIA(reductions, state, objOptions) {
 		
 					if(!r.length) {
 						delete ret.actions[strType];
-						delete reductions[strType];
+						delete changers[strType];
 						delete ret.types[strType];
 					}
 				});
@@ -250,12 +250,12 @@ function CIA(reductions, state, objOptions) {
 				data=strType;
 				strType=strType.type;				
 			}
-			if(strType.constructor === RegExp) strType = Object.keys(reductions).filter(/./.test, strType).join(",");
+			if(strType.constructor === RegExp) strType = Object.keys(changers).filter(/./.test, strType).join(",");
 			if(Array.isArray(strType) && arr(strType)[0] == strType[0]) strType = strType.join(",");
 
 			forEach(arr(strType), function(strType) {
 
-				var heap = reductions[strType] || [],
+				var heap = changers[strType] || [],
 					isInternal = rxInternal.test(strType);
 
 				if(!heap.length && !isInternal) {
@@ -263,7 +263,7 @@ function CIA(reductions, state, objOptions) {
 					return ret.dispatch("_MISSING_", [strType, data]);
 				}
 
-				if("*" in reductions) heap = heap.concat(reductions['*']);
+				if("*" in changers) heap = heap.concat(changers['*']);
 
 				if(!isInternal && !ret._blnForget) ret.history.push([strType, data]);
 
