@@ -231,7 +231,7 @@ function CIA(changers, state, objOptions) {
 		subscribe: function(fnHandler, matcher) { // add handlers that execute after state changes
 			pool.push([fnHandler, matcher]);
 			ret.dispatch("_SUBSCRIBE_", [fnHandler, matcher]);
-			return this.unsubscribe.bind(this, fnHandler);
+			return ret.unsubscribe.bind(ret, fnHandler);
 		},
 
 		unsubscribe: function(fnHandler) { // removes handlers that execute after state changes
@@ -239,7 +239,7 @@ function CIA(changers, state, objOptions) {
 				return fn[0] !== fnHandler;
 			});
 			ret.dispatch("_UNSUBSCRIBE_", [fnHandler]);
-			return this;
+			return ret;
 		},
 
 		dispatch: function dispatch(strType, data, context) { // allows changer return values to be fed to handlers via this:
