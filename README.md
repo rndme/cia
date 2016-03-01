@@ -73,6 +73,7 @@ Re-starting at the beginning and re-applying every action to a given point can r
 * Non-strings: dispatch `reducers.KEY`or `.types.KEY` instead of `"KEY"` for validity and IDE happiness
 * Action Creators: types can be invoked as methods using `.actions.KEY(data)`, call/apply set `this`
 * Over-ride un-bound conexts on `.dispatch()` with a third argument; the `this` value for the reducers
+* dispatch a function, and it returns the reult of calling the function with `dispatch()` as the arg
 
 
 ## Options
