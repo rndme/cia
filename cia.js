@@ -245,14 +245,9 @@ function CIA(changers, state, objOptions) {
 		dispatch: function dispatch(strType, data, context) { // allows changer return values to be fed to handlers via this:
 	
 			if(!strType) throw new TypeError("dispatch() requires an event type, event object, array of types, Promise, Function, or RegExp to match types with");
-		
-		  	if(typeof strType==="function"){
-			 	return strType(dispatch.bind(ret));
-			}
-		  
-		  	if(typeof strType.then==="function"){
-			 	return strType.then(dispatch.bind(ret));
-			}
+		  	if(typeof strType==="function")	return strType(dispatch.bind(ret));
+			if(typeof strType.then==="function") return strType.then(dispatch.bind(ret));
+			if(data && typeof data.then==="function") return strType.then(dispatch.bind(ret, strName));			
 		  
 			if(!data && typeof strType==="object" && strType.type){ // make compat with redux event objects
 				data=strType;
