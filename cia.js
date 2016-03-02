@@ -314,9 +314,9 @@ function CIA(changers, state, objOptions) {
 		}
 	};
 
-	forEach(Object.keys(CIA), function(k) {
-		ret[k] = (k in objOptions) ? objOptions[k] : CIA[k];
-	}); // "inherit" options to instance
+	forEach(Object.keys(objOptions), function(k) {
+		ret[k] = objOptions[k];
+	}); // "inherit" properties to instance
 
 	if(ret._blnPublishState) ret.state = state; // if publish state?
 	if(ret._blnPublishChangers) ret.changers = changers; // if publish changers?
