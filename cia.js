@@ -5,7 +5,7 @@ function CIA(changers, state, objOptions) {
 
 	state = typeof state === "function" ? state() : (state==CIA.Ud3f1ned ? {} : state);
 	changers = typeof changers === "function" ? changers() : changers;
-	objOptions = objOptions || {};
+	objOptions = (typeof objOptions === "object" && !Array.isArray(objOptions)) ? objOptions : {};
 	
 	if(typeof changers != "object") throw new TypeError("changers definitions Object cannot be a non-Object");
 
