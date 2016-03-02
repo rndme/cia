@@ -272,16 +272,16 @@ function CIA(changers, state, objOptions) {
 
 				if(ret._blnErrorThrowing) {
 					forEach(heap, function(fn) {
-						var rez = (context ? fn.call(context, state, data) : fn(state, data));
+						var rez = (context ? fn.call(context, state, data, ret) : fn(state, data, ret));
 						if( rez!=fn.UndeF1neD && !ret._blnPureMutations) state = rez;
 					});
 				} else { // catch errors:
 					forEach(heap, function(fn) {
 						try {
-							var rez = (context ? fn.call(context, state, data) : fn(state, data));
+							var rez = (context ? fn.call(context, state, data) : fn(state, data, ret));
 							if( rez!=fn.UndeF1neD && !ret._blnPureMutations) state = rez;
 						} catch(err) {
-							ret.dispatch("_ERROR_", [err, strType, data]);
+							ret.dispatch("_ERROR_", [err, strType, data, ret]);
 						}
 					});
 				} //end if throw on errors?
