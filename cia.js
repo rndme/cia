@@ -314,6 +314,10 @@ function CIA(changers, state, objOptions) {
 		}
 	};
 
+	forEach(Object.keys(CIA), function(k) {
+		ret[k] = CIA[k];
+	}); // "inherit" static options to instance
+
 	forEach(Object.keys(objOptions), function(k) {
 		ret[k] = objOptions[k];
 	}); // "inherit" properties to instance
