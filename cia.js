@@ -165,11 +165,11 @@ function CIA(changers, state, objOptions) {
 			});
 		},
 		
-		watch: function(property, type){ // needs state to be an object
+		watch: function(property, type, blnAllowRecusrion){ // needs state to be an object
 			// given a property , dispatch a given event when the property value changes
 			var value = state[property];
 			return ret.on("*", function handler(state, data){
-				if(state[property] !== value && !handler.spent){
+				if(state[property] !== value && (blnAllowRecusrion===true||!handler.spent)){
 					handler.spent = true;
 					ret.dispatch(type, {property: property, was: value, now: value=state[property]});
 					handler.spent = false;
