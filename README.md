@@ -823,7 +823,7 @@ For increased performance, this method doesn't behave the same as `[].forEach()`
 
 
 
-## Events
+## API Events
 
 
 These events fire without explicit `dispatch()` calls to reflect the life-cyle and usage of the store. They do NOT provide access to the state or appear in `.history`.
@@ -845,7 +845,7 @@ These events fire without explicit `dispatch()` calls to reflect the life-cyle a
 
 
 
-## Properties
+## API Properties
 
 Properties starting with `_` are options. These options can be set globally, and percolate to an instance upon instantiation. You can modify the options on the instance for more localized control. 
 
