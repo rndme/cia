@@ -4,23 +4,7 @@
 - **I**nner: Stuff that happens inside an app (state and user actions)
 - **A**uthority: Provides final say on state values; a single source of truth
 
-## TOC
-* [Guides](https://rndme.gitbooks.io/cia/content/guides/guides.html)
-   * [Setup](https://rndme.gitbooks.io/cia/content/guides/setup.html)
-   * [Config](https://rndme.gitbooks.io/cia/content/guides/config.html)
-   * [Subscribing](https://rndme.gitbooks.io/cia/content/guides/binding.html)
-   * [Dispatching](https://rndme.gitbooks.io/cia/content/guides/dispatching.html)
-   * [Comparing](https://rndme.gitbooks.io/cia/content/guides/comparing.html)
-* [API Reference](https://rndme.gitbooks.io/cia/content/api/api.html)
-   * [Methods](https://rndme.gitbooks.io/cia/content/api/methods.html)
-   * [Events](https://rndme.gitbooks.io/cia/content/api/events.html)
-   * [Properties](https://rndme.gitbooks.io/cia/content/api/properties.html)
-* [Examples](https://rndme.gitbooks.io/cia/content/examples/examples.html)
-   * [Basic](https://rndme.gitbooks.io/cia/content/examples/basic.html)
-   * [TodoMVC](https://rndme.gitbooks.io/cia/content/examples/todomvc.html)
-   * [Real-World](https://rndme.gitbooks.io/cia/content/examples/realworld.html)
-   * [Game](https://rndme.gitbooks.io/cia/content/examples/game.html)
-
+View [online docs](http://danml.com/cia/docs.html) to make this text prettier and smarter.
 
 ## About 
 
