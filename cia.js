@@ -347,11 +347,57 @@ function assign(o, x){for (var k in x) if(assign.hasOwnProperty.call(x, k)) o[k]
 function arr(s){return String(s).trim().split(/\s*,\s*/).filter(Boolean);}
 function forEach(r,f){var m=r.length, i=0;for(; i<m; i++)f(r[i],i,r);};
 function dupe(o){return (o && typeof o==="object") ? CIA._freeze(assign({}, o)) : o;}
+function patch(oldState, newState, blnClone) {
+	function scan(ob, upd, hist) {
+		var k, v, old, it;
+		for (k in upd) {
+			if (!scan.hasOwnProperty.call(upd, k)) continue;
+			v = upd[k];
+			old = ob[k];
+		  	switch(k){
+			  case "$push":
+			  	if(!Array.isArray(ob)) continue;
+				ob.push.apply(ob, v);
+				break;			
+			  case "$unshift":
+			  	if(!Array.isArray(ob)) continue;
+				ob.unshift.apply(ob, v);
+				break;
+			  case "$splice":
+			  	if(!Array.isArray(ob)) continue;
+			  	v.forEach(function(r){ob.splice.apply(ob, r);});
+				break;			
+			  case "$set":
+			  	for(it in hist) if(hist[it]===ob){
+				  hist[it]=v;
+				  if(v==void(0)) delete hist[it];
+				  break;
+				}			  	
+				break;			 
+			}//end switch()		  
+		  
+			if (!scan.hasOwnProperty.call(ob, k)) {
+				ob[k] = v;
+				continue;
+			}
+		  
+		  	if (typeof v === "object" && v && !+v) {
+				scan(old, v, ob);
+			} else {
+				ob[k] = v;
+			}
+		}
+		return ob;
+	} //end scan
+
+	return scan( blnClone===true ? JSON.parse(JSON.stringify(oldState)) : oldState, newState);
+} // end patch();
 
 CIA.utils={
 	assign: assign,
 	dupe: dupe,
-	each: forEach	
+	each: forEach,
+	patch: patch
 };
 
  // end packaging:  
