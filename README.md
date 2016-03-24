@@ -396,7 +396,7 @@ CIA inherits features not just from redux, but from EventEmitters like those in 
 - [`when(property, value, type, data)`](#when) *fires when a state property is a certain value*
 
 
-#### <a id='utils'></a> Static Utility Methods
+#### <a id='utils'></a> Utility Methods
 - [`assign(objBase, objUpdates)`](#assign) *copy props from one object to another*
 - [`dupe(objOrig)`](#dupe) *shallow duplicate and freeze and object*
 - [`each(arrLike, fnCallback)`](#each) *iterate an array/collection with a callback*
