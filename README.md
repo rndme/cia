@@ -853,6 +853,9 @@ The publish options affect setup, and thus can only be applied globally before i
 |_blnDeferSubscriptions|Boolean|	if true, debounce state-change callbacks. note: only the last state-change event of a cluster is passed, which is typically ok since callbacks should not care about what just happens except to optimize. |
 |_blnDeferPeriod= 15|Boolean|			w/\_blnDeferSubscriptions, ms to wait for activity to cease before firing a state-change. Reduces "hammering" when dispatching an action upon every _keypress_ or _scroll_ event.|
 |_freeze|Function| default: `Object.freeze`,	used to freeze state, change to just "Object" for mutable state, or a deep freezer. |
+|_blnMergeReturns|Boolean|	if true, shallow merge changer returns into state instead of replacing the whole state. |
+
+
 
 
 
